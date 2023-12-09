@@ -41,7 +41,7 @@ table and the Arduino pinout below.
 | DDRB | D12          | D12               | PB4        |
 | DDRB | D13          | D13               | PB5        |
 
-![<img alt="Arduino Nano Pinout" src="https://www.electronicshub.org/arduino-nano-pinout/" />](https://www.electronicshub.org/arduino-nano-pinout/)
+[<img alt="Arduino Nano Pinout" src="https://www.electronicshub.org/wp-content/uploads/2021/01/Arduino-Nano-Pinout.jpg" />](https://www.electronicshub.org/arduino-nano-pinout/)
 
 `D\d` (for instance: `D8`, `D13`) is an alias for a given pin Arduino ecosystem. You don't need to
 memorize anything. Your board has all the markings printed on the PCB solder mask itself. You will use the very same aliases such as `D8`, `D13` in your code if you decide to use Arduino framework. The Atmega328P names correspond to aliases found in Atmega toolchain and are simply a shorthand for underlying pin addresses (i.e., `0x00`). You definitely want to use these aliases for readability.
