@@ -37,6 +37,8 @@ More on Blink example can be found on Arduino website [^1].
 
 ## VSCode + PlatformIO project
 
+\<\<TBD\>\>
+
 More on Blink example can be found on Arduino website [^1].
 
 ## References

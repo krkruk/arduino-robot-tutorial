@@ -23,7 +23,7 @@ This tutorial shall follow DRY principle: Don't Repeat Yourself. If there's a go
 * [Controlling Servos](chapters/5_servo.md)
 * [Integrating knowledge - Building a robot!](chapters/6_robot_integration.md)
 
-
+Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)!
 ## Bill of materials
 
 
