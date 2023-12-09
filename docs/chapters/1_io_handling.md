@@ -12,7 +12,7 @@ The project can be completed using a standard Arduino Nano board if you exclude 
 > [!NOTE] 
 > The board uses CH340C as a UART-USB converter. It's may not be compatible with your operating system ot of the box. In *Ubuntu 22.04.3 LTS*, you'll need to configure it by uninstalling a package from your system (it disables braille display): `sudo apt remove brltty` [^1]. MS Windows may require similar steps.
 
-The Cytron's board uses Atmega328P as it's main microcontroller in the TQFP package. Luckily, you don't need to follow PCB paths correspond to which PIN. The pinout diagram above does it perfectly! Still, if it happens one day you need create your own PCB, it's worth to know physical dimensions and properties of your microcontroller. You also want make yourself familiar with the original datasheet: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf). The datasheet provides all necessary information you need to start coding your IC (integrated circuit) and tech specs that you should follow
+The Cytron's board uses Atmega328P as it's main microcontroller in the TQFP package. Luckily, you don't need to follow PCB paths to determine which board pin correspond to which IC pin. The pinout diagram above does it perfectly! Still, if it happens one day you need create your own PCB, it's worth to know physical dimensions and properties of your microcontroller. You also want make yourself familiar with the original datasheet: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf). The datasheet provides all necessary information you need to start coding your IC (integrated circuit) and tech specs that you should follow
 
 ## PORTs, PINs and power output
 
@@ -22,7 +22,7 @@ A pin is a physical connector that one can solder onto a PCB. Pins are the true 
 Atmega328p has 3 ports (PORTB, PORTC, PORTD) with built-in pull-up resistors. The 
 microcontroller can therefore support up to 23 input/output pins 
 (PORTC exposes 7 pins, the rest supports 8 pins). To visualize the overall Atemga architecture,
-please refer to the documentation (chapter: ). The block diagram (extracted from the datasheet *Chapter 2.1 Block diagram*):
+please refer to the documentation (chapter: 2). The block diagram (extracted from the datasheet *Chapter 2.1 Block diagram*):
 
 ![Source: Atmega 328p datasheet, Chapter 2.1 Block diagram](./assets/images/chapter_1/1_io_atmega_block_diagram.png)
 
@@ -57,7 +57,7 @@ to amplify a digital signal to an output that can handle bigger loads. You can r
 amplifiers in [Wiki](https://en.wikipedia.org/wiki/Category:Single-stage_transistor_amplifiers). Please, see also *28. Electrical Characteristics* in your Atmega datasheet [^3].
 
 One more thing, Arduino Nano works in 5V logic. It means the high state (also referred as *1*) is 
-5V and the low state is 0V (you guessed it! It's referred as *0*). That's the ideal condition, of course. In the real world, *0* state can be considered as 1/3 VDD or lower of your voltage supply. Similarly, the high state is 2/3 VDD or higher [^4]. You can also refer to *28.2 DC Characteristics * in datasheet for more details on input/out (high|low) voltages [^3].
+5V and the low state is 0V (you guessed it! It's referred as *0*). That's the ideal condition, of course. In the real world, *0* state can be considered as 1/3 VDD or lower of your voltage supply. Similarly, the high state is 2/3 VDD or higher [^4]. You can also refer to *28.2 DC Characteristics* in datasheet for more details on input/out (high|low) voltages [^3].
 
 Lots of theory, and no code so far. It's time to change it. Let's take a closer look to the blinking example we had in the previous chapter:
 
