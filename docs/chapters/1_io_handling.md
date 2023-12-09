@@ -4,11 +4,13 @@ Hopefully, you own and Arduino Nano-compatible board, just like the Cytron's one
 
 [<img alt="Cytron Maker Nano pinout" src="https://www.cytron.io/image/catalog/products/maker-nano/maker-nano-pinout.png" />](https://www.cytron.io/p-maker-nano-simplifying-arduino-for-projects)
 
-> [!IMPORTANT] I strongly support original Arduino to support the the idea behind it! Arduino enabled thousands of people to develop hardware reducing the entry barrier. I strongly encourage to buy yourself one!
+> [!IMPORTANT] 
+> I strongly support original Arduino to support the the idea behind it! Arduino enabled thousands of people to develop hardware reducing the entry barrier. I strongly encourage to buy yourself one!
 
 The project can be completed using a standard Arduino Nano board if you exclude a buzzer. The Cytron's board adds new features such as LEDs in all GPIO, a programmable button, and a buzzer. It's a nice touch if you want to reduce wiring in your final project.
 
-> [!NOTE] The board uses CH340C as a UART-USB converter. It's may not be compatible with your operating system ot of the box. In *Ubuntu 22.04.3 LTS*, you'll need to configure it by uninstalling a package from your system (it disables braille display): `sudo apt remove brltty` [^1]. MS Windows may require similar steps.
+> [!NOTE] 
+> The board uses CH340C as a UART-USB converter. It's may not be compatible with your operating system ot of the box. In *Ubuntu 22.04.3 LTS*, you'll need to configure it by uninstalling a package from your system (it disables braille display): `sudo apt remove brltty` [^1]. MS Windows may require similar steps.
 
 The Cytron's board uses Atmega328P as it's main microcontroller in the TQFP package. Luckily, you don't need to follow PCB paths correspond to which PIN. The pinout diagram above does it perfectly! Still, if it happens one day you need create your own PCB, it's worth to know physical dimensions and properties of your microcontroller. You also want make yourself familiar with the original datasheet: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf). The datasheet provides all necessary information you need to start coding your IC (integrated circuit) and tech specs that you should follow
 
@@ -48,7 +50,8 @@ If you want to know more about Nano board, you can refer to this page [^2].
 
 ## Digital output
 
-> [!IMPORTANT] Atmega328p pins are limited to 20mA (milli amps) per pin and up to 100/150mA for 
+> [!IMPORTANT] 
+> Atmega328p pins are limited to 20mA (milli amps) per pin and up to 100/150mA for 
 a port. You should not connect anything more amp-consuming to a port directly. Use a transistor 
 to amplify a digital signal to an output that can handle bigger loads. You can read more on 
 amplifiers in [Wiki](https://en.wikipedia.org/wiki/Category:Single-stage_transistor_amplifiers). Please, see also *28. Electrical Characteristics* in your Atmega datasheet [^3].
