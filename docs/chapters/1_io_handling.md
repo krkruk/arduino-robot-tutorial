@@ -190,6 +190,10 @@ Clearly, AVR can be much harder to comprehend. So why bother? Well, some day you
 
 ## Digital input and pull-up resistors
 
+![Button circuit with pullup resistor](./assets/images/chapter_1/4_pullup_resistor_no_debouncing.svg)
+
+More on pullup resistors can be found on Sparkfun's learning portal [^7].
+
 ## Interrupts
 
 ## Analog input
@@ -213,3 +217,4 @@ take a look at Wiki: [Digital-to-analog converter](https://en.wikipedia.org/wiki
 [^4]: [Wiki - Logic Levels](https://en.wikipedia.org/wiki/Logic_level#Logic_voltage_levels)
 [^5]: [Wiki - Diode](https://en.wikipedia.org/wiki/Diode)
 [^6]: [Adafruit - Connecting LEDs](https://makecode.adafruit.com/learnsystem/pins-tutorial/devices/led-connections)
+[^7]: [Sparkfun - Pullup resistors](https://learn.sparkfun.com/tutorials/pull-up-resistors/all)
