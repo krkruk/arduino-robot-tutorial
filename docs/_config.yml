@@ -3,3 +3,4 @@ description: Ready to build your first robot under 3h?
 show_downloads: true
 theme: jekyll-theme-hacker
 baseurl: /arduino-robot-tutorial
+markdown: kramdown

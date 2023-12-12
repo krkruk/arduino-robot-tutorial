@@ -1,4 +1,5 @@
 # Input/Output handling
+{:toc}
 
 Hopefully, you own and Arduino Nano-compatible board, just like the Cytron's one mentioned in the *Bill of materials* page:
 
@@ -88,6 +89,102 @@ Once this is done, you can then either write or read a pin state, depending on y
 
 Let's connect your own LED... You need an LED and a resistor. You should never connect an LED to a DC output as you will likely fry it. 
 
+![Basic LED circuit](./assets/images/chapter_1/2_led_connection.svg)
+
+First of all, if you have on experience in electronics you must know that LED is directional.
+It means it acts as conductor if connected with correct polarity. If you connect it the other way 
+around it won't conduct (well... until it does, briefly :). The term is reverse current and it can be feature sometimes. ). As this is no electric component 101 tutorial, I suggest to take a look at Wiki [^5]. If you are in rush, I recommend taking a look at [voltage-current chart](https://en.wikipedia.org/wiki/File:Forward_and_Reverse_Characteristics_for_diodes-en.svg) to understand how different LEDs can be.
+
+S<sub>1</sub> voltage supply is the Arduino. It gives you 5V. LED requires 0.7V and 0.2mA to
+light up. Now, you need to calculate what resistor is needed. The formula uses [Ohm's Law](https://en.wikipedia.org/wiki/Ohm%27s_law) and some [principles on connecting circuits](https://en.wikipedia.org/wiki/Kirchhoff%27s_circuit_laws) in series. I transformed it so it corresponds to the circuit
+
+$$ R_1 = \frac{S_1 - D_1}{I} = \frac{5V - 0.7V}{20 \cdot 10^{-3}A} = 215 \frac{V}{A} = 215\Omega $$
+
+Isn't the physics is electrics amazing? Now, you need to pick a resistor that matches the 
+calculations. If you apply lower resistance value, you may fry your LED. I suggest to pick 220Ohm
+ resistor or higher. It's all math and diagrams. How to connect it? Well, let's go back to 
+ physical world. An LED has two leads: a short one and a longer one. The longer one is the 
+ '<strong>+</strong>' (katode) and the shorter one is '<strong>-</strong>' (anode). You want to connect your polarities in series, ie: `V+ - +R- - +D- - -V`. 
+ A '-' in component is a plus for the other one. You can also take a look at Adafruit's tutorial 
+ for more details [^6]. Oh, and as an interesting fact - the [colors on your resistor](https://en.wikipedia.org/wiki/Electronic_color_code) packaging matter!.
+
+ Please, construct your circuit as proposed here. You can use your jumper cables if you want:
+ ![Arduino circuit](./assets/images/chapter_1/3_led_connection_arduino.jpg)
+
+ Now, the coding part! It's not that complicated
+(source [Incremental blink](./assets/code/chapter_1/1_incremental_blink/)):
+
+```
+static constexpr uint8_t HARDWARE_LED = 8;
+static constexpr uint8_t DELAY_RATE = 100;
+static constexpr uint16_t MAX_DELAY = 3000;
+
+static uint8_t hardwareLedState = HIGH;
+static uint8_t hardwareLedDelayCounter = 1;
+
+void setup() {
+  pinMode(HARDWARE_LED, OUTPUT);
+  digitalWrite(HARDWARE_LED, HIGH); 
+}
+
+void loop() {
+  uint16_t delayValue = DELAY_RATE * hardwareLedDelayCounter;
+  ++hardwareLedDelayCounter;
+  if (delayValue > MAX_DELAY) {
+    delayValue = DELAY_RATE;
+    hardwareLedDelayCounter = 1;
+    hardwareLedState = HIGH;
+  }
+
+  hardwareLedState ^= 1;
+  digitalWrite(HARDWARE_LED, hardwareLedState); 
+  delay(delayValue);
+}
+```
+
+The code increases delay time in each consecutive led state, i.e, 200ms - LOW, 300ms - HIGH and so on. Note a new constant `HARDWARE_LED` - it matches `D8` pin in the Fritzing diagram above.
+
+Ok, so how does it look like in pure AVR then. Well, what Arduino does is really this:
+
+```
+int main() {
+  setup();
+  while(1) {
+    loop();
+  }
+}
+```
+
+What Arduino Framework does is really it provides a layer of abstraction over the AVR microcontroller. It's way more developer friendly than dealing with raw registers. Speaking of registers, do you remember the blink example? This is pure AVR code (source: [AVR Blink](./assets/code/chapter_1/2_avr_blink/2_avr_blink.ino)):
+
+```
+#include <avr/io.h>
+#include <avr/delay.h>
+
+// This is the same hardware LED we introduced earlier!
+#define HW_LED (1 << PB0)
+
+int main() {
+
+  /* setup() */
+  DDRB = (1 << PB0);
+  PORTB = (1 << PB0);  // light up the LED
+  /* end: setup() */
+
+  /* loop() */
+  while (1) {
+    PORTB ^= (1 << PB0);
+    _delay_ms(1000);
+  }
+  /* end: loop() */
+}
+```
+
+It way more complex, lots of bit shifts and poor readability. You certainly can see `setup()` and `loop()` blocks.
+
+To initialize pin mode (remember: `pinMode()` function?), you need to follow documentation *13.2.3 Switching Between Input and Output* [^3] and set DDRB's value to 1, or precisely `0b0000 0001`. The port shall work as the output device allowing to set/unset state. If you want to connect an LED to `D12` (also known as PB4), you can enable direction by assigning `DDRB = (1 << PB4)` or even `DDRB = 0b0001000`. To enable pin, you need to operate on a different register: PORTB. Operation `^=` means toggling a value under the given bit location. In Arduino, you would call `digitalWrite(pin, LOW|HIGH)` twice.
+
+Clearly, AVR can be much harder to comprehend. So why bother? Well, some day you may be asked to implement a simple firmware on ATtiny13, a microcontroller with very little resources. The AVR example requires 166 bytes, the Arduino one: 924bytes. Any framework shall add additional overhead and consume more flash on your device. You need to be very conscious about resources and the platform limits (i.e., stack depth - nesting functions calls may also lead to errors!).
 
 ## Digital input and pull-up resistors
 
@@ -112,3 +209,5 @@ take a look at Wiki: [Digital-to-analog converter](https://en.wikipedia.org/wiki
 [^2]: [Electronics Hub - Arduino Nano Pinout](https://www.electronicshub.org/arduino-nano-pinout/)
 [^3]: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)
 [^4]: [Wiki - Logic Levels](https://en.wikipedia.org/wiki/Logic_level#Logic_voltage_levels)
+[^5]: [Wiki - Diode](https://en.wikipedia.org/wiki/Diode)
+[^6]: [Adafruit - Connecting LEDs](https://makecode.adafruit.com/learnsystem/pins-tutorial/devices/led-connections)
