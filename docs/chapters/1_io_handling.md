@@ -1,4 +1,5 @@
 # Input/Output handling
+
 {:toc}
 
 Hopefully, you own and Arduino Nano-compatible board, just like the Cytron's one mentioned in the *Bill of materials* page:
