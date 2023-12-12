@@ -1,3 +1,5 @@
+markdown: kramdown
+
 title: Arduino/AVR tutorial
 description: Ready to build your first robot under 3h?
 show_downloads: true
