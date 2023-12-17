@@ -190,9 +190,148 @@ Clearly, AVR can be much harder to comprehend. So why bother? Well, some day you
 
 ## Digital input and pull-up resistors
 
+
+It's time to get some input events from the world. An obvious choice is a push button. 
+A simple device that breaks a circuit if anyone pushes it...
+
+Now, we already know that turning on an LED is to provide state **1**, which translates to 
+5V potential at a pin. Good! How about we reverse the order. It'll be you who changes a potential 
+on Arduino lead, which translates to a different state on a pin. All you need to do is to verify 
+the state in the code!
+
+Some theory is needed. You need to provide stable voltage on your pin. Otherwise, you can read 
+any state state between 0 and 1, it'll float. This is why you need to construct a special circuit 
+to support a button with a pullup resistor, such as this one:
+
 ![Button circuit with pullup resistor](./assets/images/chapter_1/4_pullup_resistor_no_debouncing.svg)
 
-More on pullup resistors can be found on Sparkfun's learning portal [^7].
+You are not limited to such a simple design. You can of course connect your button through a 
+transitor, i.e., common collector circuit and/or a capacitor to the circuit to eliminate contact 
+bounce [^7]. Eliminating contact bouncing can be done [programmatically](https://docs.arduino.cc/built-in-examples/digital/Debounce) but it's a rather tedious job to do.
+
+More on pullup resistors can be found on Sparkfun's learning portal [^8] and debouncing here [^9].
+
+Ok, that's all for now. It's a 3h tutorial after all. Let's do some coding. The Cytron board you 
+have already has a push button! Let's use it! This is the button schematics (retrieved from 
+Cytron's docs):
+
+![Cytron Nano board - push button schematics](./assets/images/chapter_1/5_cytron_push_button_schematics.png).
+
+We are interested in the bottom part of the diagram. We can use programmatically `D2` pin. I hope 
+you spotted that the button does not support physical debouncing, unfortunately. You can either 
+code it on your own, based on the given resources or simply dismiss it. Here's a simple code 
+snippet that changes an LED state anytime you press the button and keeps it until you push the 
+button again (source - [3_pullup_and_software_debouncing](./assets/code/chapter_1/3_pullup_and_software_debouncing/3_pullup_and_software_debouncing.ino)):
+
+```
+static constexpr uint8_t PUSH_BUTTON = 2;
+static uint8_t builtinLedState = LOW;
+
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(PUSH_BUTTON, INPUT_PULLUP);
+  digitalWrite(LED_BUILTIN, builtinLedState);
+}
+
+void loop() {
+  uint8_t pushButtonState = digitalRead(PUSH_BUTTON);
+  if (pushButtonState == LOW) {
+    delay(50);                                    // simple programmatic debouncing
+                                                  // You should measure the precise debouncing period
+                                                  // with an oscilloscope. 50ms is just an educated guess
+    pushButtonState = digitalRead(PUSH_BUTTON);
+
+    if (pushButtonState == LOW) {
+      builtinLedState ^= 1;                       // toggling the LED state
+      digitalWrite(LED_BUILTIN, builtinLedState);
+
+      while (digitalRead(PUSH_BUTTON) == LOW);    // blocking the program until
+                                                  // the user releases the button
+    }
+  }
+}
+```
+
+Interesting code parts: `pinMode(<<pin>>, INPUT_PULLUP|INPUT)`. This is a pullup configuration for `D2 button`. From now on, you can read the state on the `D2` pin!. `digitalRead(<<pin>>)` function reads the state, either `HIGH` or `LOW`.
+
+Another, *weird* part of the code is the nested if-statement and a delay function. Well, this is 
+software debouncing. You push the button and connectors start to bounce back and forth. The 
+program waits another 50ms until the connectors stabilize. The state should no longer float on 
+that pin by the time the program reads the state again. If it is indeed low again, you change the
+state of the button.
+
+Note the last `while` loop at the end of the snippet. It blocks the application until the user releases the button. This is to prevent instant state toggling of the LED. Comment this out and see how your board behaves!
+
+Now, how can you code the same thing in AVR? Let's see (source: [4_pullup_and_software_debouncing_avr](./assets/code/chapter_1/4_pullup_and_software_debouncing_avr/4_pullup_and_software_debouncing_avr.ino)):
+```
+#define LED_BUILTIN (1 << PB5)
+#define PUSH_BUTTON (1 << PD2)
+
+int main() {
+
+  // setup()
+  DDRB = LED_BUILTIN;
+  DDRD = 0x00;          //set the enitre port as input - including PD2
+
+  PORTB = 0x00;
+  PORTD = PUSH_BUTTON;  //PD2 is set as input and the state as HIGH - pullup enabled
+
+  // loop()
+  while (true) {
+
+    // the push button is pressed if it's state is 0
+
+      if (bit_is_clear(PIND, PD2)) {  // much clearer than: !(PIND & (1<<PD2))
+        _delay_ms(50);
+        if (!(PIND & PUSH_BUTTON)) {
+          PORTB ^= LED_BUILTIN;
+          while (bit_is_clear(PIND, PD2));
+        }
+      }
+  }
+}
+```
+
+There are some major differences between this code and the Arduino one. First of all, the state is kept in registers rather than in an application stack. There is also an additional register 
+used: `PIND` (see docs: *13.4.10 PIND* [^3]). The register is responsible for reading the state 
+on Atmega's lead. It returns all 8 bytes, each byte corresponds to one of the pins in your board. 
+To read the state on PD2, you need to run some shifts to get data. Let's decipher this bit, 
+assuming you actually keep holding the button:
+
+```
+values for:
+  PIND = 0b???? ?0?? = 8 (? means state unknown)
+  PD2 = 2
+  1<<PD2 = 0b0000 0100 = 4
+
+// button is pressed, state on the button lead is 0
+1. !(PIND & (1<<PD2))
+2. PIND & (1<<PD2)  --> 0b?????0?? & 0b00000100 = 0b00000000 = 0
+3. !(0b00000000) = !(0) = !(false) = true  // zero is considered as false in C/C++/python
+4. result: true
+
+// button is released, state on the button lead is 1
+  PIND = 0b???? ?1?? = 8 (? means state unknown)
+
+1. !(PIND & (1<<PD2))
+2. PIND & (1<<PD2)  --> 0b?????1?? & 0b00000100 = 0b00000100 = 8
+3. !(0b00000100) = !(8) = !(true) = false // any non-zero number in C/C++/python is always considered as true
+4. result: false
+```
+
+So really, all this complex math on bytes is all about reading a state on a given lead. If you
+decide to use Arduino library, it's way easier to do so! Of course, it all comes with a price.
+ This is hex size for each framework:
+  * AVR hex size: 184 bytes
+  * Arduino hex size: 1086 bytes, more than 1kiB!
+
+Good job! You know how to blink your LEDs both programmatically and with a push button. That's 
+quite a lot. Really, interacting with a microcontroller is all about sending and receiving ones 
+and zeros. All subsequent chapters only extend that notion! Can you imagine manually pushing and releasing a button 1000 times a second? This is what you will learn in the PWM chapter. Well, you'll learn how to do it programmatically, at least ;)
+
+Let's move on to the next topic on interrupts. It's not the best idea to run blocking operations 
+in the main program loop after all.
+ 
 
 ## Interrupts
 
@@ -217,4 +356,6 @@ take a look at Wiki: [Digital-to-analog converter](https://en.wikipedia.org/wiki
 [^4]: [Wiki - Logic Levels](https://en.wikipedia.org/wiki/Logic_level#Logic_voltage_levels)
 [^5]: [Wiki - Diode](https://en.wikipedia.org/wiki/Diode)
 [^6]: [Adafruit - Connecting LEDs](https://makecode.adafruit.com/learnsystem/pins-tutorial/devices/led-connections)
-[^7]: [Sparkfun - Pullup resistors](https://learn.sparkfun.com/tutorials/pull-up-resistors/all)
+[^7]: [Wiki - Contact bounce](https://en.wikipedia.org/wiki/Switch#Contact_bounce)
+[^8]: [Sparkfun - Pullup resistors](https://learn.sparkfun.com/tutorials/pull-up-resistors/all)
+[^9]: [Physical Computing - Debouncing](https://makeabilitylab.github.io/physcomp/arduino/debouncing.html)
