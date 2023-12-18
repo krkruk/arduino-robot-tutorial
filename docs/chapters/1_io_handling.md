@@ -337,8 +337,7 @@ in the main program loop after all.
 
 Last but not least, we shall take a look at interrupts in this section. What an interrupt? Well,
 it's a mechanism that allows reacting to external (or internal) events outside of the main 
-program loop? Wait, what? Let's take a look an example, this time it'll be AVR code first (source
- - [5_interrupts_avr_toggle_led](./assets/code/chapter_1/5_interrupts_avr_toggle_led/5_interrupts_avr_toggle_led.ino)):
+program loop? Wait, what? Let's take a look an example, this time it'll be AVR code first (source - [5_interrupts_avr_toggle_led](./assets/code/chapter_1/5_interrupts_avr_toggle_led/5_interrupts_avr_toggle_led.ino)):
 
 ```
 #include <avr/io.h>
