@@ -335,12 +335,162 @@ in the main program loop after all.
 
 ## Interrupts
 
-## Analog input
+Last but not least in this chapter we shall take a look at interrupts. What an interrupt? Well,
+it's a mechanism that allows to react on an external (or internal) events outside of the main 
+program loop? Wait, what? Let's take a look an example, this time it'll be AVR code first (source
+ - [5_interrupts_avr_toggle_led](./assets/code/chapter_1/5_interrupts_avr_toggle_led/5_interrupts_avr_toggle_led.ino)):
 
-## Analog output - PWM
+```
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#define LED_BUILTIN (1 << PB5)
+#define PUSH_BUTTON (1 << PD2)
 
-Digital electronics, as your Atmega328p, is all about 0 and ones. There are no values in between,
-ideally. Thus, it's a rather hard task to talk about analog values in between 0-5V. Luckily, we are not exactly bound to 2 states only. We can change a pin state fast enough to reduce output power in a given timespan - this is called PWM, Pulse
+ISR(INT0_vect) {                   // magic here: Interrupt Service Routine
+  PORTB ^= LED_BUILTIN;
+}
+
+static void setup() {
+  DDRB = LED_BUILTIN;
+  DDRD &= !(PUSH_BUTTON);          // pin as input
+  PORTD = PUSH_BUTTON;             // pull-up
+
+  EIMSK = 1 << INT0;               // enable PD2/INT0 as an interrupt source
+  EICRA = 1 << ISC01;              // Enable direction of interrupt on INT0, 
+                                   // falling edge
+}
+
+int main() {
+  setup();
+  sei();                           // enable global interrupts, SREG register
+
+  while (true) {
+    // idle, do nothing
+    _delay_ms(10000);
+  }
+}
+```
+
+If you take a closer look at `while (true)` loop, you see it does nothing but sleeping. A good 
+nap is good but this is not why you bought your board to simply let it sleep. You want it to work 
+for you and blink an LED!. If you compile it and start pressing the button you see that the LED 
+turns on and off. Why? The interrupt!
+
+There are some lines that can be somehow surprising. First of all `sei()` function. It enables 
+global interrupts in `SREG` registry as documented in *6.3.1 SREG – AVR Status Register* [^3]. 
+It's important not to forget to use it. In my personal experience, forgetting running this 
+function is the most common reason why my interrupt routines don't work... it's because I didn't 
+enable them in the first place... There's also a function that has exactly opposite effect: 
+`cli()` - it disables interrupts. It sometimes is handy as well.
+
+Ok, interrupts are enabled. Now, we need to use PB5 pin as interrupt! Atmega328p offers two I/O 
+pins as a source for external interrupts. Not much but still, we need to work with things we 
+have*. If you take a look at Arduino pinout from in the top of this page you'll notice that `PB5`
+has also `INT0` label. That's the interrupt! Smart design, isn't it?
+
+\*you can set up interrupts as *PCIEx* that generates interrupts on many pins but it's out of 
+scope of this tutorial
+
+The setup functions sets up the `PB5` as a standard pullup-enabled input pin. There are two 
+suspicious registers `EIMSK` and `EICRA`. `EIMSK` allows you to enable `INT0` as an interrupt 
+source (vector) - see documentation *12.2.2 EIMSK – External Interrupt Mask Register* [^3]. The 
+documentation states you need to set up activation property to either raising or falling edge. 
+You need the falling edge as you use a pullup-resistor. It means the high potential on the lead. 
+So anytime you press the button, the potential goes to zero, hence the falling edge.
+
+Now, the most important part: `ISR()`. ISR is a special macro that handles interrupts in AVR. An 
+*average* ISR body should be very concise and efficient. No long running operations as you block 
+the main loop. Disabling interrupts and re-enabling them can be also a good idea if your code is 
+highly asynchronous. You also should store `SREG` value to make sure you don't disable anything 
+by mistake. ISR should then look more like this:
+
+```
+volatile uint8_t tmpSREG = 0;
+
+ISR(INT0_vect) {                   // magic here: Interrupt Service Routine
+  tmpSREG = SREG;
+  cli();
+  PORTB ^= LED_BUILTIN;
+  SREG = tmpSREG;
+}
+```
+
+Luckily, Atmega does this operation automatically, so you don't need to specify any `tmpSREG` 
+variables [^10]. Hope, you noticed `volatile` keyword. Interrupts modify data outside of a 
+regular program loop impacting the value that can be read from such a variable. The keyword 
+prevents a compiler from optimizing the variable, improving stability of your application.
+
+So what's an interrupt? A routine that reacts on an external/internal event and runs small 
+portions of code called routines outside of a regular program loop. Hope, it's clear now. 
+However, can you do the same thing in an easier way? Yes, you guessed it! Let's use Arduino this 
+time! So here's the code that does the same thing, with no debouncing (source - 
+[5_interrupts_avr_toggle_led](./assets/code/chapter_1/5_interrupts_avr_toggle_led/5_interrupts_avr_toggle_led.ino)):
+
+```
+static constexpr uint8_t PUSH_BUTTON = 2;
+volatile uint8_t builtinLedState = LOW;
+
+
+void toggleLed() {
+  builtinLedState ^= 1;                       // toggling the LED state
+  digitalWrite(LED_BUILTIN, builtinLedState);
+}
+
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(PUSH_BUTTON, INPUT_PULLUP);
+  digitalWrite(LED_BUILTIN, builtinLedState);
+  attachInterrupt(                            // enabling interrupts on D2
+    digitalPinToInterrupt(PUSH_BUTTON),       // mapping D2 to Atmega's INT0
+                                              // this is for readability
+    toggleLed,                                // a pointer to function, simply pass
+                                              // a name of your function, it's not that scary!
+    FALLING);                                 // activate the interrupt on falling edge
+}
+
+void loop() {
+  delay(10000);
+}
+```
+
+Hope, the resemblance is obvious... `toggleLed()` function simply performs a toggle operation on 
+your built-in LED, using an external state variable. `enableInterrupt` well... enables the 
+interrupt in nearly plain English. `digitalPinToInterrupt` maps a pin number to a corresponding 
+event source pin, here `INT0`. This is certainly more readable and does not require much of 
+knowledge on your board pinout. `toggleLed` here is simply passing a pointer to `toggleLed` 
+function. You can use a more explicit way to show it's a pointer: `&toggleLed`, although I find 
+it a bit of an overkill. Finally, you need to define a trigger that activates your interrupt. 
+Except FALLING, there options such as `LOW|CHANGE|RISING` [^11]. 
+
+The `enableInterrupt` function works for digital pins only. Implementing a custom `ISR` can be 
+more generic. Atmega328p support 26 input vectors as defined in 
+`11.1 Interrupt Vectors in ATmega328P` [^3]. You can also browse `avr/iom328p.h` header to 
+get the vector list:
+
+```
+[...]
+/* Interrupt Vectors */
+/* Interrupt Vector 0 is the reset vector. */
+
+#define INT0_vect_num     1
+#define INT0_vect         _VECTOR(1)   /* External Interrupt Request 0 */
+// [...]
+```
+
+To summarize, the interrupts mechanism is a very handy tool if you want to support multiple 
+actions in almost the same time. It allows you to act upon any external system and run a routine 
+to handle the event efficiently.
+
+Using interrupts and other Atmega peripherals allows you to implement a solution that appears to 
+perform several actions in the same time. Multitasking, my friend :)!
+
+
+## Analog input and output - ADC and PWM
+
+Digital electronics, as your Atmega328p, is all about zeros and ones. 
+There are no values in between, ideally. Thus, it's a rather hard task to talk about analog 
+values in between 0-5V. Luckily, we are not exactly bound to 2 states only. We can change a pin 
+state fast enough to reduce output power in a given timespan - this is called PWM, Pulse
 Width Modulation. It's a rather important aspect of embedded programming, therefore
 please read the next chapter that handles PWM in details.
 
@@ -348,6 +498,11 @@ There are also Arduino boards that support DAC - Digital-to-Analog converters, s
 as [Arduino Due](https://store.arduino.cc/products/arduino-due). Unfortunately,
 Atmega 328p, as the one in your board, does not support DAC. For more details,
 take a look at Wiki: [Digital-to-analog converter](https://en.wikipedia.org/wiki/Digital-to-analog_converter).
+
+You can also read analog values with your microcontroller. Atmega328p comes with a 10-bit ADC and 
+comparator built-in! ADC stands for Analog-Digital-Converter, which effectively translates voltage to 10 bit value: 0-1023 integer value. More on ADC in the next chapter!
+
+# References
 
 
 [^1]: [CH340 Configuration in Ubuntu 22.04](https://askubuntu.com/questions/1403705/dev-ttyusb0-not-present-in-ubuntu-22-04)
@@ -359,3 +514,5 @@ take a look at Wiki: [Digital-to-analog converter](https://en.wikipedia.org/wiki
 [^7]: [Wiki - Contact bounce](https://en.wikipedia.org/wiki/Switch#Contact_bounce)
 [^8]: [Sparkfun - Pullup resistors](https://learn.sparkfun.com/tutorials/pull-up-resistors/all)
 [^9]: [Physical Computing - Debouncing](https://makeabilitylab.github.io/physcomp/arduino/debouncing.html)
+[^10]: [Stack Overflow - May I use cli() and sei() in the interrupt?](https://stackoverflow.com/questions/65112480/may-i-use-cli-and-sei-in-the-interrupt)
+[^11]: [Arduino - attachInterrupt](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/)
