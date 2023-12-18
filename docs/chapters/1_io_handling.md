@@ -3,7 +3,7 @@
 **Contents**
 * toc
 {:toc}
-Hopefully, you own and Arduino Nano-compatible board, just like the Cytron's one mentioned in the *Bill of materials* page:
+Hopefully, you own an Arduino Nano-compatible board, just like the Cytron's one mentioned in the *Bill of materials* page:
 
 [<img alt="Cytron Maker Nano pinout" src="https://www.cytron.io/image/catalog/products/maker-nano/maker-nano-pinout.png" />](https://www.cytron.io/p-maker-nano-simplifying-arduino-for-projects)
 
