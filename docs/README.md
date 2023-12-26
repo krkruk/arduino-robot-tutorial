@@ -17,7 +17,8 @@ This tutorial shall follow DRY principle: Don't Repeat Yourself. If there's a go
   * Never seen an IDE? Want to test your set up? Come here!
 * [I/O handling](chapters/1_io_handling.md)
   *  How to control pins in your board? Start here!
-* [Pulse Width Modulation](chapters/2_analog_and_pwm.md.md)
+* [Analog input, Pulse Width Modulation](chapters/2_analog_and_pwm.md)
+  * Life in between 0V and 5V
 * [UART](chapters/3_uart.md)
 * [Controlling Stepper Motors](chapters/4_stepper_motor.md)
 * [Controlling Servos](chapters/5_servo.md)
