@@ -20,6 +20,7 @@ This tutorial shall follow DRY principle: Don't Repeat Yourself. If there's a go
 * [Analog input, Pulse Width Modulation](chapters/2_analog_and_pwm.md)
   * Life in between 0V and 5V
 * [UART](chapters/3_uart.md)
+  * Data transfer between PC and microcontroller
 * [Controlling Stepper Motors](chapters/4_stepper_motor.md)
 * [Controlling Servos](chapters/5_servo.md)
 * [Integrating knowledge - Building a robot!](chapters/6_robot_integration.md)

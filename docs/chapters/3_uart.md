@@ -10,15 +10,18 @@ Serial port, [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receive
 [Universal Asynchronous Receiver-Transmitter](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
  is a way that allows you to connect easily your device with PC and exchange data.
 
-Asynchronous means that receiver/transmitter do not have to run at the same pace. Clocks of both devices can run at different frequencies or be out of phase. UART uses start and stop bits to determine when the transmission is over. This gives a great advantage. The protocol can work with no difficult clock synchronization. Therefore, UART can be used at longer distances, speaking more of meters (yards) rather than centimeters (inches).
+Asynchronous means that receiver/transmitter does not have to run at the same pace. Clocks of both devices can run at different frequencies or be out of phase. UART uses start and stop bits to 
+determine when the transmission is over. This gives a great advantage. The protocol can work with no 
+difficult clock synchronization techniques and technologies. 
+Therefore, UART can be used at longer distances, speaking more of meters (yards) rather than 
+centimeters (inches).
 
 There are two industry wide standards of UART: [RS-232](https://en.wikipedia.org/wiki/RS-232) 
 and [RS-485](https://en.wikipedia.org/wiki/RS-485). We are going to use 2 other cases: TTL 
-(Transistor-to-Transistor Logic) via USB bridge. In other words, you'll use Atmega UART, connect it to 
-a 3rd party silicone chip (such as CH340, PL2303, FT232RL and many other). You can even use another 
+(Transistor-to-Transistor Logic) and connection via UART-USB bridge. In other words, you'll use Atmega integrated circuit, connect it to a 3rd party silicone chip (such as CH340, PL2303, FT232RL and many other) and plug a USB connector to your PC. You can even use another 
 Atmega to host a USB (for instance Atmega16u4 with hardware USB support [^2])
 
-Good news is your Arduino board (either Cytron's or the genuine one) come with UART-USB converter. From coding perspective, you don't need to do anything.
+Good news is your Arduino board (either Cytron's or the genuine one) comes with UART-USB converter. From coding perspective, you don't need to do anything.
 
 A traditional UART tutorial presents and explains a data frame - a sequence of bits that form a single portion of a message... Let's get it over now (image source: [Wiki - by Cody Hyman](https://pl.wikipedia.org/wiki/Plik:Serial_frame.png)):
 
@@ -26,11 +29,13 @@ A traditional UART tutorial presents and explains a data frame - a sequence of b
 
 Isn't it nice? Well, let me explain it from a perspective of typical parameters one typically uses:
 
-* [baudrate](https://en.wikipedia.org/wiki/Baud) (popular: 9600, 115200) - originally, baud rate is a number of symbols/pulses emitted in a unit of time. In context of UART communication, think baudrate=bitrate=bits per second [^3]. Good enough, we are not purists here. And one more thing, the bigger the number, the faster is data transmission.
+* [baudrate](https://en.wikipedia.org/wiki/Baud) (popular: 9600, 115200) - originally, baud rate is a number of symbols/pulses emitted in a unit of time. In context of UART communication, think `baudrate=bitrate=bits per second` [^3]. Good enough, we are not purists here. And one more thing, the bigger the number, the faster is data transmission.
 * dataframe (popular choice: 8 bits, 7-9 possible) - simply how many data bits shall be placed between the start bit and parity/end bits
 * parity (set to no-parity) - a checksum bit, you can use it or simply ignore it. I prefer to ignore it
 * stop bits (popular choice: one; other options: one and a half, two bits)
 * flow control (Arduino choice: No Flow Control) - UART supports two leads: RTS (Request to Send) and CTS (Clear to Send). Arduino uses TX and RX pins only, so there is no need to bother.
+
+For a more detailed explanation, please refer to external sources such as this one: [UART - A hardware communication protocol](https://www.analog.com/en/analog-dialogue/articles/uart-a-hardware-communication-protocol.html) and other.
 
 If you are going to connect your UART device to another device, make sure that:
 * Baudrate must be the same for both a receiver and a transmitter
@@ -70,25 +75,32 @@ If you are interested in writing your own software, you need a library or [follo
 Data *serialization* is a process of converting data into a format that can be transmitted over 
 wire/air and decoded at a destination point. The reverse process is called *deserialization*.
 
-The keyword is **format**. You can choose two options: text or binary. A text option is usually human readable, supported by formats such as CSV, JSON, HTML, anything custom. A binary format converts data into a series of bits, sometimes applying compression. You need to use the same serialization/deserialization technique in both receiver and transmitter to successfully deliver a message. Otherwise, this can be random bytes.
+The keyword is **format**. You can choose two options: text or binary. The text option is usually human readable, supported by formats such as CSV, JSON, HTML, anything custom. The binary format 
+converts data into a series of bytes, sometimes applying compression. You need to use the same 
+serialization/deserialization technique in both receiver and transmitter to successfully deliver a 
+message. Otherwise, this can be random bytes.
 
 Which one is better? Well, it depends. The binary format usually comes with big frameworks that can 
-convert a *schema* into your C or C++ code. All you need to do is to link generated files to your 
-program. IMO, the greatest disadvantage of the binary format is difficulty to handle data packets. 
-Since all your data is binary, you don't really know when the message stops and another message 
-begins. A byte of binary data is really an 8-bit number, which translates to 0-255. Microcontroller is 
-not aware of what the byte means. The binary formats of your choice usually provides libraries to
-capture a whole message and deserialize it, such as 
-[protobuf](https://github.com/protocolbuffers/protobuf) or [msgpack](https://msgpack.org/). 
-Of course, you can implement something custom too - see the note below.
+convert a *schema* into your C or C++ code. All you need to do is to compile a schema file and link 
+generated files to your program. IMO, the greatest disadvantage of the binary format is difficulty to 
+handle data packets. Since all your data is binary, you don't really know when the message stops and 
+another message begins. A byte of binary data is really an 8-bit number, which translates to 0-255(dec). Microcontroller is not aware of what the byte means. The binary formats of your choice usually 
+provides libraries to capture a whole message and deserialize it, such as 
+[protobuf](https://github.com/protocolbuffers/protobuf) or [msgpack](https://msgpack.org/), [ROS Messages](https://wiki.ros.org/Messages). Of course, you can implement something custom too - see the note below.
 
-You can use text format. It has several advantages: 1) it's human readable, 2) easy to find the last 
-character, usually a new line character `\n`. Text format narrows down a range of values we send in a 
-single byte. [ASCII](https://pl.wikipedia.org/wiki/ASCII) encodes human readable values starting from 
-a value 32 (in decimal, space) up until 126 (dec, `~` character). Numbers between 0-31 and 127 are 
-special characters, such as new line character `\n` 10 (decimal). Thanks to this trick, a 
+You can use text format too! It has several advantages: 1) it's human readable, 2) easy to find the last character, usually a new line character `\n`. Text format narrows down a range of values we send 
+in a single byte from the binary data perspective. [ASCII](https://pl.wikipedia.org/wiki/ASCII) encodes human readable numbers as characters starting from a value 32 (in decimal, space ` `) up until 126 (dec, `~` character). Numbers between 0-31 and 127 
+are special characters, such as *new line* character `\n` 10 (decimal). Thanks to this trick, a 
 microcontroller can listen and cache raw bytes incoming from another UART device until it 
 receives a byte of value 10 (dec, a new line character). You received a full line, a message that can be processed!
+
+> [!NOTE]
+> Long time ago, I was playing with robotics and European Rover Challenge. We didn't know anything
+> about electronics and coding back then. We needed to control a robotic arm with 8 effectors. We 
+> developed a binary format -> one byte to control all 8 devices: AAAV VVVV. `AAA` - 3 address bits, 
+> `VVVVV` - a value between 0-31. This technique allowed us to control a 6-DOF arm without really any 
+> worries about a data package start and stop position. All we needed to do was to read just one byte 
+> to rule it all :)!
 
 In my experience, hobby projects work very nicely with JSON (text) encoding. Simply, read a line of 
 text data and deserialize JSON into individual variables. I recommend ArduinoJson[^4].
@@ -150,13 +162,6 @@ void loop() {
 }
 ```
 
-> [!NOTE]
-> Long time ago, I was playing with robotics and European Rover Challenge. We didn't know anything
-> about electronics and coding back then. We needed to control a robotic arm with 8 effectors. We 
-> developed a binary format -> one byte to control all 8 devices: AAAV VVVV. `AAA` - 3 address bits, 
-> `VVVVV` - a value between 0-31. This technique allowed us to control a 6-DOF arm without really any 
-> worries about a data package start and stop position. All we needed to do was to read just one byte 
-> to rule it all :)!
 
 ## Arduino Framework
 
