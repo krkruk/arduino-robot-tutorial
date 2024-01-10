@@ -4,6 +4,8 @@
 {:toc}
 So far, you've been blinking LEDs in one way or another. It's time to let your board talk to your PC too!.
 
+See *19. USART0* chapter in Atmega328p Datasheet for very detailed UART tech specification [^1].
+
 ## Introduction
 
 Serial port, [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter) or 
@@ -99,7 +101,7 @@ receives a byte of value 10 (dec, a new line character). You received a full lin
 > about electronics and coding back then. We needed to control a robotic arm with 8 effectors. We 
 > developed a binary format -> one byte to control all 8 devices: AAAV VVVV. `AAA` - 3 address bits, 
 > `VVVVV` - a value between 0-31. This technique allowed us to control a 6-DOF arm without really any 
-> worries about a data package start and stop position. All we needed to do was to read just one byte 
+> worries about a data package start and stop positions. All we needed to do was to read just one byte 
 > to rule it all :)!
 
 In my experience, hobby projects work very nicely with JSON (text) encoding. Simply, read a line of 
