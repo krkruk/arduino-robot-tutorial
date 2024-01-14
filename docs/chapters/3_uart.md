@@ -397,7 +397,7 @@ Yes, that's all! Isn't it simple? Look at your results!
 You know how to write data, now it's time to implement a way to receive a command. Both examples deal
 with turning on and off LEDs, most of them in your Cytron's board! 
 
-### Read a line of data
+#### Read a line of data
 
 Note, this example uses Arduino's `String`[^12] that allocates memory dynamically. You can modify this example with `readBytesUntil` that accepts a static array of characters.
 
@@ -458,7 +458,7 @@ depending on a PIN number you enter! It also sends a feedback back to Serial Mon
 Finally, your first useful app. Now imagine these LEDs are light bulbs, a kettle, a coffee machine and
 so on. You can control them all with some basic knowledge on power electronics (i.e, how to use relays).
 
-### Read a line of JSON data
+#### Read a line of JSON data
 
 First, let's construct a JSON contract (schema). Let's say there are two options: LED_ON and LED_OFF. This is what your microcontroller is going to do after all. These are two possible values. JSON also 
 needs a key. `op` should be good enough (short, yet descriptive). You want to keep your labels
