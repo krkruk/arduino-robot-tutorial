@@ -171,7 +171,7 @@ ArduinoJson will be used by default in subsequent chapters. Make sure to install
 
 ## Arduino Framework
 
-Arduino comes allows you using serial communication with ease. Make sure you familiarize yourself with documentation[^5].
+Arduino allows you using serial communication with ease. Make sure you familiarize yourself with documentation[^5].
 
 ### Serial initialization
 
