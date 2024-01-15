@@ -22,12 +22,15 @@ This tutorial shall follow DRY principle: Don't Repeat Yourself. If there's a go
 * [UART](chapters/3_uart.md)
   * Data transfer between PC and microcontroller
 * [Controlling Stepper Motors](chapters/4_stepper_motor.md)
+  * *You spin me right round round round...*
+  * Full Step, Half Step, Arduino libraries
 * [Controlling Servos](chapters/5_servo.md)
 * [Integrating knowledge - Building a robot!](chapters/6_robot_integration.md)
 
 Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)!
 ## Bill of materials
 
+* 2x 28BYJ-48 stepper motors with ULN2003 driver (Darlington amp)
 
 ## 3D printing
 
