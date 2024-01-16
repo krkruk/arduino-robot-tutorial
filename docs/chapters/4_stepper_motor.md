@@ -316,9 +316,130 @@ If you decide to use one of these libraries, you need to do some math too. Most 
 motors have very little torque. Therefore, such a stepper usually comes with a gearbox. 28BYJ-48 stepper performs ~2048 steps per single revolution[^5]. You can consider it as a *max speed*, or
 max steps threshold. Anything less than that simply reduces angular velocity.
 
+I'll let you analyze *Stepper* example on your own. Go to `Tools->Manage Libraries...` and type `Stepper`. Select `Stepper by Arduino`:
+
+![Installation of Stepper Library](./assets/images/chapter_4/1_stepper_library_install.png)
+
+Once you complete this step, go to `File -> Examples -> Stepper -> <<one of the available examples>>`.
+
+You can install `AccelStepper` library in the very similar way. Do it! This is a sample code you can
+play with (source: [Arduino AccelStepper](./assets/code/chapter_4/stepper_accelstepper_example/stepper_accelstepper_example.ino)):
+```
+#include <AccelStepper.h>
+
+static const AccelStepper wheel(AccelStepper::HALF4WIRE, 7, 5, 6, 4);
+
+void setup() {
+                            // steps per revolution: 2048
+  wheel.setMaxSpeed(768);   // max steps per second,
+                            // simply guesstimated
+  wheel.setSpeed(768);
+}
+
+void loop() {
+  wheel.runSpeed(); // move a wheel by a step.
+                    // try really hard not to block anything in `loop()`, see the docs
+}
+
+```
+
+Note that the library uses a different sequence of pins. See constructor documentation for more
+details[^6]. The documentation doesn't provide a pinout sequence. You need to determine it on
+your own or... change the wiring. Yet another heuristic step and trial-and-error approach.
+
+`AccelStepper::setMaxSpeed()` function requires max steps per second parameter. There is no clear documentation on
+that so this is guestimation as well. My stepper works well with 768steps/second quite well.
+
+`AccelStepper::setSpeed()` sets the current speed for the stepper. You can change it dynamically if you want. The 
+library offers a more precise control: applying a predefined number of steps. This is good if you want
+to move a certain distance with your robot. We'll get there!
+
+Finally, `AccelStepper::runSpeed()` applies another step. Note that there should be no blocking waits
+in the main `loop()` of the program. Otherwise, your will won't spin. Keep your main loop as short as
+possible to provide smooth stepper experience. 
+
+Sorry, you can't really spin up another thread... well, you can use a timer to perform an action inside asynchronously (to a degree). Let's give it a try. This time, I'm using Timer2 and CTC mode. Timers can create PWM signals but also can precisely measure time and execute an action when
+an internal counter clears.
+
+I want to set up something that allows to run 768ticks in a second. The formula for CTC is (see: 
+*Figure 17-5. CTC Mode, Timing Diagram*[^7]):
+
+$$ f_{OCnx} =  \frac {f_{clk_{I/O}}}{2 \cdot N \cdot (1 + OCR_{nx})}$$
+
+OCR<sub>nx</sub> should be then:
+$$ OCR_{nx} =  \frac {f_{clk_{I/O}}}{2 \cdot N \cdot f_{OCnx}} - 1$$
+where:
+  * OCR<sub>nx</sub> - value to clear/trigger an event, must be 8-bit value
+  * `N` - prescaler
+  * f<sub>clkI/0</sub> = 16MHz
+  * f<sub>OCnx</sub> - desired frequency, here: 768Hz
+
+clearly, N=64 seems to be a good solution, `OCR_{nx} = 161,7604... ~= 162`. This precision is good 
+enough for all purposes. It's a systematic error that you can compensate later. You also need an ISR
+vector for the OCR2. You can find it in `#include <avr/io.h>` or `#include <avr/iom328p.h>` file.
+`TIMER2_COMPA_vect` is a choice of ours (`TIMER2_COMPB_vect` will not be allocated, let's leave it).
+Now we have all we need, let's code!
+
+> [!NOTE]
+> Sometimes you cannot precisely set up a timer or compute gear ratio or anything. It causes a
+> systematic error[^8]. In our case it's caused by imperfect calibration[^9]. You'll see effects
+> of this error to grow over time. You can compensate it just like we do so in... 
+> [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) and leap year. Hope, you
+> get the analogy.
+
+Let's see the full code with the timer set accordingly (source: [AccelStepper and CTC Timer2](./assets/code/chapter_4/stepper_accelstepper_ctc_timer/stepper_accelstepper_ctc_timer.ino)):
+
+```
+#include <AccelStepper.h>
+#include <avr/interrupt.h>
+
+static const AccelStepper wheel(AccelStepper::HALF4WIRE, 7, 5, 6, 4);
+
+void setup() {
+  // configure Timer2 as CTC at frequency 768Hz
+  TCCR2A = (1<<COM2A1)   // Clear on compare match
+           | (1<<WGM21); // CTC
+
+  TCCR2B = (1<<CS22);    // prescaler = 64
+  OCR2A = 162;           // OCR_nx = 162, as derived in calculations
+  TIMSK2 = (1<<OCIE2A);  // enable interrupt on COMPA
+
+  // steps per revolution: 2048
+  wheel.setMaxSpeed(768);  // max steps per second,
+                           // simply guesstimated
+  wheel.setSpeed(768);
+}
+
+void loop() {
+  delay(1000); 
+}
+
+ISR(TIMER2_COMPA_vect) {
+  wheel.runSpeed();  // move a wheel by a step.
+                     // try really hard not to block anything in `loop()`, see the docs
+}
+```
+
+The main difference is the timer configuration. Please, review *PWM* chapter if this config does
+not look familiar. That's the very same principle, just a different mode (here: *CTC*, there: *Phase 
+Correct PWM*). Clearly, stepper motors are now handled by an ISR routine. All bit switching happens
+in the background, outside of the main loop. The drawback is of course you can no longer use this
+timer as a PWM generator, unfortunately. Tradeoffs!
+
+That's all I wanted to present you in this chapter. You know how to implement your own stepper
+library and use an off-the-shelf one in two ways. You are more than ready to use this knowledge
+to build a decent robot chassis controlled with stepper motors. We'll integrate this knowledge
+in the last chapter of this tutorial. For now, let's move to the next chapter.
+
+
+
 # References
 [^1]: [Unipolar stepper motor](https://en.wikipedia.org/wiki/Stepper_motor#Unipolar_motors)
 [^2]: [Bipolar stepper motor](https://en.wikipedia.org/wiki/Stepper_motor#Bipolar_motors)
 [^3]: [Arduino Stepper library](https://www.arduino.cc/reference/en/libraries/stepper/)
 [^4]: [AccelStepper library](https://github.com/waspinator/AccelStepper)
 [^5]: [Last Minute engineering: Servo tutorial](https://lastminuteengineers.com/28byj48-stepper-motor-arduino-tutorial/)
+[^6]: [AccelStepper - constructor docs](https://www.airspayce.com/mikem/arduino/AccelStepper/classAccelStepper.html#a3bc75bd6571b98a6177838ca81ac39ab)
+[^7]: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)
+[^8]: [Systematic error](https://www.sciencedirect.com/topics/engineering/systematic-error)
+[^9]: [Wiki: Sources of systematic errors](https://en.wikipedia.org/wiki/Observational_error#Sources_of_systematic_error)
