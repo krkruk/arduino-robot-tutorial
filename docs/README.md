@@ -31,6 +31,7 @@ Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchi
 ## Bill of materials
 
 * 2x 28BYJ-48 stepper motors with ULN2003 driver (Darlington amp)
+* 1x SG-92R servo (or similar)
 
 ## 3D printing
 
