@@ -45,7 +45,7 @@ There are many tutorials in the Web. You can google them or simply use one of th
 
 Now, how to control it?
 * 50Hz PWM signal
-* To work in range 5%-10% duty cycle, to control its position between its maximum ranges 
+* 5%-10% duty cycle, to control its position between its maximum ranges 
 (often 0 to 180deg)[^4]. There are lots of variations on it[^5]. From my experience, this is a good
 approximation but still it's better to calibrate the values on your own. 
 * Power supply and GND are also welcomed :)
