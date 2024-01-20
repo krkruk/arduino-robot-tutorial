@@ -164,18 +164,18 @@ This is of course a sign of PWM, although implemented with software means. How d
 look like? An oscilloscope can provide some details:
 
 ![Oscilloscope - Servo at 0 deg, zoom out](./assets/images/chapter_5/01_servo_0deg_zoomout.jpg)
-*Oscilloscope - servo at 0 deg, zoom out*
+*<br />Figure: Oscilloscope - servo at 0 deg, zoom out*
 
 ![Oscilloscope - Servo at 0 deg, zoom in](./assets/images/chapter_5/02_servo_0deg_zoomin.jpg)
-*Oscilloscope - servo at 0 deg, zoom in, 500us grid resolution*
+*<br />Figure: Oscilloscope - servo at 0 deg, zoom in, 500us grid resolution*
 
 
 ![Oscilloscope - Servo at 180 deg, zoom out](./assets/images/chapter_5/03_servo_180deg_zoomout.jpg)
-*Oscilloscope - servo at 180 deg, zoom out*
+*<br />Figure: Oscilloscope - servo at 180 deg, zoom out*
 
 
 ![Oscilloscope - Servo at 180 deg, zoom in](./assets/images/chapter_5/04_servo_180deg_zoomin.jpg)
-*Oscilloscope - servo at 180 deg, zoom in, 500us grid resolution*
+*<br />Figure: Oscilloscope - servo at 180 deg, zoom in, 500us grid resolution*
 
 Take a look at any *zoom-out* chart, with *10ms* resolution. The diagram is showing peaks at 20ms
 intervals, which translates to 50Hz PWM frequency. The *zoom-in* diagram is scaled in *500us* resolution. You can see how wide the peak is, which in our case is slightly more than 500us and 2500, just as we programmed it! Isn't it wonderful?
