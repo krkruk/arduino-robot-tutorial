@@ -25,18 +25,28 @@ This tutorial shall follow DRY principle: Don't Repeat Yourself. If there's a go
   * *You spin me right round round round...*
   * Full Step, Half Step, Arduino libraries
 * [Controlling Servos](chapters/5_servo.md)
-  * Torque and angle
+  * Torque and angle with a servo
 * [Integrating knowledge - Building a robot!](chapters/6_robot_integration.md)
+  * You are familiar with the basics by now. It's time to make a robot!
 
 Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)!
+
 ## Bill of materials
 
+To complete the tutorial, you'll need:
+
+* 1x Cytron Nano board
 * 2x 28BYJ-48 stepper motors with ULN2003 driver (Darlington amp)
 * 1x SG-92R servo (or similar)
+* 1x set of jumper leads
+* 1x set of resistors
+* 1x set of LEDs
+* 1x photoresistor 
+* 1x microUSB cable
+* 1x push button (optionally)
 
 ## 3D printing
-
-You should print the following elements:
+To complete the tutorial and build a robot, you'll need:
 
 * 1x chassis_front_beam.stl 
 * 1x chassis_rear_beam_with_airsoft_bearing.stl 
