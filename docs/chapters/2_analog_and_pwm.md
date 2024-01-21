@@ -331,4 +331,4 @@ is to buy an external DAC converter such as this one [MCP4725](https://github.co
 [^1]: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf)
 [^2]: [analogWrite() documentation](https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/)
 [^3]: [Low-Pass Filter a PWM Signal into an Analog Voltage](https://www.allaboutcircuits.com/technical-articles/low-pass-filter-a-pwm-signal-into-an-analog-voltage/)
-[^4]: [Digital-to-Analog Conversion](https://thingsdaq.org/2022/02/02/digital-to-analog-conversion/)
+[^4]: [Digital-to-Analog Conversion](https://thingsdaq.org/2022/02/02/digital-to-analog-conversion/>)

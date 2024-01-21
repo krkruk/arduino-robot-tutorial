@@ -20,12 +20,16 @@ Let's quickly decipher the definition to fit our context:
 * servo does keep its position
 * servo can be controller with a microcontroller
 
-Internally, a servo is an effector (here: a DC motor) wrapped with electronics that read and control its position. To read a position you need some sort of [*encoder*](https://en.wikipedia.org/wiki/Encoder_(position)). You also need a control mechanism/circuitry to read the position and correct it.
-Often, it's a microcontroller with custom software, usually a [PID controller](https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller). Finally, the servo needs to
-actuate in the real world. 5V/20mA is barely enough to light up an LED. The DC servo comes with
-an [H-bridge](https://en.wikipedia.org/wiki/H-bridge) to control position and power in the DC motor. The servo also may need gears (gearbox) to increase output torque. All of it comes in a small and usually affordable package!
+Internally, a servo is an effector (here: a DC motor) wrapped with electronics that read and control its position. To read a position you need some sort of 
+[*encoder*](https://en.wikipedia.org/wiki/Encoder_(position)). You also need a control 
+mechanism/circuitry to read the position and correct it.
+Often, it's a microcontroller with custom software, usually a [PID controller](https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller). 
+Finally, the servo needs to actuate in the real world. 5V/20mA is barely enough to light up an LED. 
+The DC servo comes with an [H-bridge](https://en.wikipedia.org/wiki/H-bridge) to control position 
+and power in the DC motor. The servo also may need gears (gearbox) to increase output torque. All of it comes in a small and usually affordable package!
 
-Hopefully, you bought SG92(R) servo. It's a small servo that offers a decent torque in a small package. There are three wire leads: brown, red, orange. Colors may vary in tinge. The middle one, the
+Hopefully, you bought SG92(R) servo. It's a small servo that offers a decent torque in a small casing. 
+There are three wire leads: brown, red, orange. Colors may vary in tinge. The middle one, the
 red one is a positive power supply. You'll connect 5V there. The brown one is GND. The orange one
 is PWM signal, which controls the position of the servo. Make sure you connect it to PB1 pin.
 The pinout of the servo is pretty smart. 5V lead in the middle effectively prevents you from applying
@@ -53,7 +57,7 @@ approximation but still it's better to calibrate the values on your own.
 ## Servo library
 
 Arduino IDE comes with *Servo* library included[^3]. The library uses 16-bit timer to provide
-precise timing to control servos. The library can control up to 60 servos, depending on a microcontroller we use.
+precise timing to control servos. The library can control up to 60 servos, depending on a microcontroller you use.
 
 There is an official Arduino Servo tutorial if you need a different perspective on basics[^6].
 
@@ -81,17 +85,17 @@ The first line `#include <Servo.h>` includes the *Servo* library. It comes with 
 don't need to install anything. The servo device uses pin #9 as suggested in the pinout table above.
 Moreover, you need to create an object of type `Servo`: `static Servo servo;`.
 
-The next step is to simply connect the servo object (software) with your *more* tangible servo, the hardware on pin 9: `servo.attach(SERVO_PIN); // SERVO_PIN=9`.
+The next step is to simply connect the servo object (software) with your *more tangible* servo, the hardware on pin 9: `servo.attach(SERVO_PIN); // SERVO_PIN=9`.
 
 Finally, we want to use the servo, so it's business time. The logic shall move servo handle/hook/rudder
-in increments of 45 degrees. To issue a command and set a desired position, you need to run `servo.write(angle);` command. Don't forget about a reasonable delay so the servo change can take an effect.
+in increments of 45 degrees. To issue a command and set a desired position, you need to run `servo.write(angle);` command. Don't forget about a reasonable delay so the servo move can take an effect.
 
-Once you compile the software and deploy it to your microcontroller, you'll how the servo moves.
-Congratulations! It's working! It's alive!
+Once you compile the software and deploy it to your microcontroller, you'll observe how the servo
+moves. Congratulations! It's working! It's alive!
 
 ![Frankenstein - it's alive](https://media1.tenor.com/m/V5FNCh31UH4AAAAC/frankenstein-its-alive.gif)
 
-The servo moves but the manual mentions 0-180 degree range. My servo certainly doesn't meet the specification, at least for now. You need to calibrate it. Luckily, the library allows you to attach
+The servo moves but its manual mentions 0-180 degree range. My servo certainly doesn't meet the specification, at least for now. You need to calibrate it. Luckily, the library allows you to attach
 a servo and defining a pulse width for PWM signal. Remember? 5%-10% duty cycle. Let's involve some
 trial and error then...
 
@@ -136,8 +140,8 @@ void applyServoPosition(uint8_t angle) {
 The example employs *ArduinoJson* and *Serial* to let you control the servo with your Serial Monitor.
 The calibration for such a servo can be complicated task if you need to perform extra precise 
 operations (see: [Metrology](https://en.wikipedia.org/wiki/Metrology)). It can be also very simple if 
-you need it for non-critical applications. As like simple routes, let's play with this line: `servo.attach(SERVO_PIN, 540, 2540)`.
-How did I do it? Well, you need to issue a command:
+you need it for non-critical applications. As most of us love taking a simple route, let's play with this line: `servo.attach(SERVO_PIN, 540, 2540)`.
+How did I come up with it? Well, you start with the default values and you issue a command:
 
 ```
 {"pos":0}
@@ -152,14 +156,14 @@ the value if the parallelism is overshot or add if the handle goes back a bit to
 ```
 You issue this command in the Serial Monitor. By default, Arduino assumes the max value to *2400*.
 Clearly, my handle never reached real 180 degree movement so I needed to increase it up to *2540*.
-The magic values you enter are microseconds (*1us=10<sup>-6</sup>s*). The library uses 16 bit timer
+The magic values you enter are microseconds (*1us=10<sup>-6</sup>s*). The library uses 16-bit timer
 to generate interrupts at frequency of 2MHz (16MHz CPU freq, and prescaler=8), which translates to 
 *0,0000005s = 0.5us` resolution. This is how often the library processes an ISR procedure to
 mimic PWM and apply correct duty cycle for up to 60 servos! Science? Magic? No, it's engineering!
 If you are interested how it's really implemented, I suggest you take a look at the original source
 code[^7].
 
-Assuming you use Cytron's Nano board, you also should see how the D9 LED changes its brightness.
+Assuming you use Cytron's Nano board, you also should see how the `D9` LED changes its brightness.
 This is of course a sign of PWM, although implemented with software means. How does a waveform
 look like? An oscilloscope can provide some details:
 
@@ -178,7 +182,8 @@ look like? An oscilloscope can provide some details:
 *<br />Figure: Oscilloscope - servo at 180 deg, zoom in, 500us grid resolution*
 
 Take a look at any *zoom-out* chart, with *10ms* resolution. The diagram is showing peaks at 20ms
-intervals, which translates to 50Hz PWM frequency. The *zoom-in* diagram is scaled in *500us* resolution. You can see how wide the peak is, which in our case is slightly more than 500us and 2500, just as we programmed it! Isn't it wonderful?
+intervals, which translates to 50Hz PWM frequency. The *zoom-in* diagram is scaled in *500us* resolution. You can see how wide the peak is, which in our case is slightly more than 500us and 
+2500us, just as we programmed it! Isn't it wonderful?
 
 Alright, we're done with the library. Go ahead and check the documentation or simply see the library
 header for details[^8]. What if you don't want to trigger 2 million interrupts every second? Well,
@@ -187,7 +192,7 @@ hardware PWM at 50Hz and use it as the output.
 
 ## Hardware-based servo control
 
-Actually, we did exercise this bit earlier in the tutorial. Remember PWM section in [Analog input, Pulse Width Modulation](chapters/2_analog_and_pwm.md) chapter? Go ahead!
+Actually, we did exercise this bit earlier in the tutorial. Remember PWM section in [Analog input, Pulse Width Modulation](2_analog_and_pwm.md) chapter? Go ahead!
 
 You can use up to two servos with the 16-bit timer in Atmega328p. It's not much. Remember, you can
 always design your own board that controls many more servos. Really, it's just a question of
@@ -196,7 +201,79 @@ projects as it lowers an entry threshold to get started with. With more advanced
 you will know when to make the right decisions to balance costs vs complexity vs timing requirements 
 (vs other parameters). This is engineering :). Simply, delivering good tradeoffs.
 
-Ok. That's enough of coaching. Let's take a look at the code:
+Ok. That's enough of coaching. Let's take a look at the code (source: [Servo - 16bit timer, Hello World](./assets/code/chatper_5/03_servo_16bit_timer_hello_world/03_servo_16bit_timer_hello_world.ino):
+
+```
+class Servo {
+  public: 
+  enum class SERVO_SELECTOR {
+    SERVO_1,
+    SERVO_2
+  };
+  static inline void setAngle(SERVO_SELECTOR servo, uint8_t angle) {
+    uint16_t dutyCycle = map(angle, 0, 180, 540, 2540);
+
+    switch (servo) {
+      case SERVO_SELECTOR::SERVO_1:
+        OCR1A = dutyCycle;
+        break;
+      case SERVO_SELECTOR::SERVO_2:
+        OCR1B = dutyCycle;      // unused: COM1B1 is disabled
+        break;
+      default:
+        break; 
+    }
+  }
+};
+void setup() {
+  DDRB |= (1<<PB1); // Set PB1 as output
+  /*
+      Enable PWM on PIN PB1/Arduin D9
+
+      CPU CLK, fclk_I/O = 16,000,000
+      Timer: Phase Correct PWM, see 15.9.4 Phase Correct PWM Mode in Datasheet
+      Formula: fOCnxPCPWM = fclk_I/O / {2* N * TOP}
+      fOCnxPCPWM=50Hz
+      Prescaler: N=8
+      TOP = fclk_I/O / {2 * N * fOCnxPCPWM}
+
+      TOP=ICR1=20000
+  */
+  TCCR1A = (1<<COM1A1)   // PB1 as PWM, see the pinout
+      | (1<<WGM11);      // phase correct PWM, TOP=ICR1
+  TCCR1B = (1 << WGM13) 
+      | (1 << CS11);     // prescaler 8
+  ICR1 = 20000;          // 50Hz 
+}
+
+void loop() {
+  for (uint8_t angle = 0; angle <= 180; angle += 45) {
+    Servo::setAngle(Servo::SERVO_SELECTOR::SERVO_1, angle);
+    delay(1000);
+  }
+}
+```
+
+Well, this is straightforward, isn't it? First thing you need to do is to set up PWM: 1) make
+`PB1` pin as output, 2) compute parameters for a given timer (here Phase Correct PWM), 3) apply the 
+computed values, including ICR (Input Capture Register, say 'the frequency register'), 
+4) set `PB1`/`COM1A1` pin as output, 5) use the timer `OCR1A`/`OCR1B` registries.
+
+The whole `setup()` function is about setting up the timer. `Servo::setAngle()` does two things:
+1) converts angles to microseconds/ticks for the given timer, 2) applies the value.
+
+The application does the very same thing as the first *Hello World* example. This time, you did
+it solely with hardware. Good job!
+
+# Summary
+
+You should be pretty comfortable with controlling servos by now. There are also different servos, 
+some name them digital. The difference is you don't need PWM to control them, you need UART.
+Usually this kind of a servo is more expensive as it provides additional feedback information
+such as position, power use and allow using it as a regular motor (continuously rather than just
+angle control).
+
+That's it! Let's integrate the knowledge you gained throughout the course to finally build a robot!
 
 
 # References
