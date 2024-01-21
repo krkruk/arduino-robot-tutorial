@@ -36,6 +36,17 @@ Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchi
 
 ## 3D printing
 
+You should print the following elements:
+
+* 1x chassis_front_beam.stl 
+* 1x chassis_rear_beam_with_airsoft_bearing.stl 
+* 1x front_wall.stl  
+* 1x rear_wall.stl 
+* 2x stepper_motor_case.stl 
+* 2x wheel.stl
+
+(more items to come)
+
 ## Integrated development environment
 
 You need to install an integrated development environment to start developing your programs ASAP. It's the easiest and fastest way (of course you can use a standalone AVR Toolchain[^1] and AVRDude [^2]... it's your choice but make sure you have plenty of time and tenacity).

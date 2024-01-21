@@ -37,7 +37,8 @@ More on Blink example can be found on Arduino website [^1].
 
 ## VSCode + PlatformIO project
 
-\<\<TBD\>\>
+Install the IDE as shown here:
+* VSCode/VSCodium + PlatformIO plugin. This is how you can do it: [Installation tutorial](https://docs.platformio.org/en/latest/integration/ide/vscode.html#ide-vscode)
 
 More on Blink example can be found on Arduino website [^1].
 
