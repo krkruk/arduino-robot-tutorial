@@ -54,8 +54,13 @@ To complete the tutorial and build a robot, you'll need:
 * 1x rear_wall.stl 
 * 2x stepper_motor_case.stl 
 * 2x wheel.stl
+* 1x driver_tower_with_servo.stl
+* 1x servo_arm.stl
+* 1x servo_arm_effector.stl
+* 1x servo_holder
 
-(more items to come)
+And a plastic 6mm airsoft BB. That's your bearing and a part of the rear axle. Some basic tools 
+and an electrical tape, and a few zip ties can be quite handy too.
 
 ## Integrated development environment
 
