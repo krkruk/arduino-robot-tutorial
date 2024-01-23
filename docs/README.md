@@ -59,8 +59,21 @@ To complete the tutorial and build a robot, you'll need:
 * 1x servo_arm_effector.stl
 * 1x servo_holder
 
-And a plastic 6mm airsoft BB. That's your bearing and a part of the rear axle. Some basic tools 
+Additionally:
+* 1x plastic 6mm airsoft BB
+* rubber strips to form a tyre (adhesive required). I used a window gasket/seal and cut it long enough (well, it's wheel circumference)
+
+That's your bearing and a part of the rear axle. Some basic tools, glue 
 and an electrical tape, and a few zip ties can be quite handy too.
+
+All STL files can be downloaded from this tutorial repository: [3d_models](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models). 
+
+The robot has been design to require no screws, bolts, anything. It's ugly but functional :).
+Printing instruction:
+
+* PLA is good enough. Some elements require precision: 0.1mm or so.
+* 6-10% fill
+* 2 line wall thickness
 
 ## Integrated development environment
 
