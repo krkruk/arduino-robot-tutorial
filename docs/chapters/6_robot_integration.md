@@ -10,7 +10,7 @@ You've learned so much. Let's put that into practice and finally build your own 
 Alright! You want to build a robot. This is the right place. I can simply provide you some steps
 to achieve it. Still, this is not a purpose of this exercise. Let's think a bigger picture - engineering.
 
-Normally, one creates an item, a tangible object to fulfil a need. It can be a minor but still its
+Normally, someone creates an item, a tangible object to fulfil a need. It can be a minor thing but still its
 goal is to satisfy the need. Well? Why do we need to build a robot? It's fun, for sure. You also
 want to familiarize yourself with basics of microcontrollers and coding. You did it in previous 
 chapters. You are quite proficient at it! This chapter really integrates the knowledge. IMO, Building
