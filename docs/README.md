@@ -57,7 +57,7 @@ To complete the tutorial and build a robot, you'll need:
 * 1x driver_tower_with_servo.stl
 * 1x servo_arm.stl
 * 1x servo_arm_effector.stl
-* 1x servo_holder
+* 1x servo_holder.stl
 
 Additionally:
 * 1x plastic 6mm airsoft BB
