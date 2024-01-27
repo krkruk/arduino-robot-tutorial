@@ -97,7 +97,28 @@ management on [Wiki - Project Management](https://en.wikipedia.org/wiki/Project_
 
 ## Pinout
 
->> Here comes a pinout table and a Fritzing drawing
+Make sure you follow the pinout as presented below:
+
+| Device            | Arduino Pin |
+| ----------------- | ----------- |
+| Servo PWM line    | D9          |
+| Right Stepper IN1 | D7          |
+| Right Stepper IN2 | D6          |
+| Right Stepper IN3 | D5          |
+| Right Stepper IN4 | D4          |
+| Left Stepper IN1  | PIN_A4      |
+| Left Stepper IN2  | PIN_A3      |
+| Left Stepper IN3  | PIN_A2      |
+| Left Stepper IN4  | PIN_A1      |
+
+
+You can find the pinout in the code by the following references:
+```
+WeaponizedServo(uint8_t servoPin = 9, uint16_t deg0Micros=540, uint16_t deg180Micros=2540) 
+const AccelStepper rightWheel; // default pinout:  (7, 5, 6, 4)
+const AccelStepper leftWheel; //  default pinout: (PIN_A4, PIN_A2, PIN_A3, PIN_A1)
+```
+
 
 ## Assembly
 
@@ -182,7 +203,77 @@ a hierarchy of classes if you want. Just allocate such objects on stack rather t
 
 ### JSON contract
 
-See **RB-GENERAL-IMPL/0031/REF:RB-GENERAL-REQ/0020**
+As explained in UART chapter, agreeing on a contract and data serialization is crucial.
+In this section, we are going to define a set of commands to control the robot. The following
+requirements and assumption provide some details of what's really expected:
+* Drive: **RB-GENERAL-IMPL/0031/REF:RB-GENERAL-REQ/0020**
+* Servo: **RB-COMBAT-IMPL/0020/REF:RB-COMBAT-REQ/0020-0030**, **RB-COMBAT-REQ/0020-0030**
+
+Let's focus on the drive functionality. There are 4 expected actions:
+* FORWARD (mnemonic: `FWD`): moves forward with a given power setting,
+* BACKWARD (mnemonic: `BWD`): moves backward with a given power setting,
+* TURN_LEFT (mnemonic: `T_L`): turns left with a given power setting, the turning starts only from
+a stationary position
+* TURN_RIGHT (mnemonic: `T_R`): turns right with a given power setting, the turning starts only from
+a stationary position
+
+Additionally, I want to add STOP command:
+* STOP (mnemonic: `STOP`): wheels no longer spin, power cut-off, servo returns to its default position
+
+Each mnemonic shall accept values in between: `0..255`. `STOP` mnemonic shall ignore the value but still, make sure to send zero, for clarity.
+
+You or a control app shall send only one of these mnemonics at the time.
+Sample JSON:
+
+```
+{
+    "FWD|BWD|T_L|T_R|STOP": 0..255
+}
+
+# example:
+{
+    "FWD": 128
+}
+
+# another example
+{
+    "STOP": 0
+}
+
+```
+
+Servo definition can look like this:
+* HIT (mnemonic `HIT`) - the servo performs a rapid strike and returns to its default position,
+the code ignores any numerical value
+* SERVO_POSITION (mnemonic: `SPOS`) - sets the servo into a position between 0..180 degrees.
+* STOP (mnemonic: `STOP`) - places the servo to its neutral position
+
+Similarly as in the drive case, you send either one of these two mnemonics:
+
+```
+{
+    "HIT|SPOS|STOP": 0..180
+}
+
+# example (performs a hit):
+{
+    "HIT": 0
+}
+```
+
+You can of course combine these commands and keep hitting an opponent while driving:
+
+```
+{
+    "FWD": 255,
+    "HIT": 0
+}
+```
+
+You may be asking... why mnemonics? Well, microcontrollers have limited resources. Providing
+long strings can severely impact on data processing or even cause memory issues. It's better
+to keep it safely and use shorter names. Of course, I encourage you to experiment!
+
 
 ### Servo integration and calibration
 
@@ -195,27 +286,573 @@ horizontal position. We can even overshoot a bit for the best *shock and awe* ef
 Once you calibrate the servo you should now the 0deg and 180deg positions. You can now adjust
 the arm location at either of these positions and consider it as your default state. So say, the arm is vertical (or slightly tilted towards the hitting direction). Then, by applying 0deg or 180 deg
 position, the servo performs a hit. It's a question of how you inserted the servo into
-the driver tower box. For the configuration as presented in the assembly pictures, I can provide
-these control code:
+the driver tower box. 
+
+This sample allows controlling servo in range 0..180degrees, as suggested by the JSON contract:
 
 ```
-some code
+#include <Servo.h>
+
+class WeaponizedServo {
+  const uint8_t SERVO_PIN;
+  Servo servo;
+public:
+  WeaponizedServo(uint8_t servoPin = 9) : SERVO_PIN{servoPin} {}
+
+  void init() {
+    servo.attach(SERVO_PIN);
+    defaultPosition();
+  }
+
+  void changePosition(uint8_t angle) {
+    angle = min(angle, 180);
+    servo.write(angle);
+  }
+
+  void defaultPosition() {
+    servo.write(45);
+  } 
+};
+
+WeaponizedServo sledgehammer;
+
+void setup() {
+  sledgehammer.init();
+}
+
+void loop() {
+  sledgehammer.changePosition(0);
+  delay(1000);
+  sledgehammer.changePosition(180);
+  delay(1000);
+}
+
 ```
 
 See the `loop()` function. It's a temporary set of commands to simply test the servo. You want
-to integrate one thing at a time so you minimize opportunities for errors.
+to integrate one thing at a time so you minimize opportunities for errors. JSON integration will be
+the last step in the process.
+
+Ok, but what about the hitting mechanism? We need another method (function):
+
+```
+  void hit() {
+    // servo is callibrated to 'hit' at 180deg angle
+    servo.write(180);
+    delay(350);
+    defaultPosition();
+  }
+```
+
+The problem about this function is it performs a blocking action in the main `loop()`. It means
+that the robot shall stall for 350ms until it can drive again. That's suboptimal. We should
+use something more non-blocking. You guessed it, an interrupt! The interrupt should be triggered
+after 350ms to restore the servomechanism back to it's original position. The problem is
+you need to precisely measure 350ms. We need a timer... Should be it a hardware one? It can,
+but it's a rather tedious job to do... Let's use an off-the-shelf library, *Arduino-Timer*[^2].
+Make sure you install it prior to running the code (source: [Servo Integration](./assets/code/chapter_6/01_servo_integration/01_servo_integration.ino)):
+
+```
+#include <Servo.h>
+#include <arduino-timer.h>
+
+class WeaponizedServo {
+  const uint8_t SERVO_PIN;
+  const uint16_t SERVO_0DEG_MICROS;
+  const uint16_t SERVO_180DEG_MICROS;
+  Servo servo;
+
+protected:
+  static Timer<2> timer;
+public:
+  WeaponizedServo(uint8_t servoPin = 9, uint16_t deg0Micros=540, uint16_t deg180Micros=2540) 
+    : SERVO_PIN{servoPin},
+      SERVO_0DEG_MICROS{deg0Micros},
+      SERVO_180DEG_MICROS{deg180Micros} {}
+
+  void init() {
+    servo.attach(SERVO_PIN, SERVO_0DEG_MICROS, SERVO_180DEG_MICROS);
+    defaultPosition();
+  }
+
+  void changePosition(uint8_t angle) {
+    angle = min(angle, 180);
+    servo.write(angle);
+  }
+
+  void defaultPosition() {
+    servo.write(45);
+  } 
+
+  void hit() {
+    // servo is callibrated to 'hit' at 180deg angle
+    servo.write(180);
+    WeaponizedServo::timer.in(350, [](void* thizz) -> bool { 
+      static_cast<WeaponizedServo*>(thizz)->defaultPosition();
+      return false; 
+    }, this);
+  }
+
+  static void tick() {
+    WeaponizedServo::timer.tick();
+  }
+
+  /*
+  * Return true if the servo is ready to perform another hit.
+  */
+  operator bool() const {
+    return WeaponizedServo::timer.empty();
+  }
+
+};
+// initialize static timer
+Timer<2> WeaponizedServo::timer;
+
+
+WeaponizedServo sledgehammer;
+
+void setup() {
+  sledgehammer.init();
+}
+
+void loop() {
+  if (sledgehammer) {
+    delay(2000);
+    sledgehammer.hit();
+  }
+  WeaponizedServo::tick();
+}
+
+```
+
+As usual, there are many ways to skin a cat. I want to keep all servo-related actions
+within the same class/namespace. Therefore I placed *Timer* within class and made it static
+so you can also create an servo instance to support two hardware servos in total.
+
+There is also `operator bool()` method that simply checks if there are any actions
+pending. If there are no actions, then you can hit again :). Again, `loop()` contents
+serves as a testing example. We'll provide the final code here at JSON integration step.
 
 
 ### Stepper integration
 
+Servo is done, it's time for the stepper integration and make is a valid chassis. The
+drive model is simplified. You can improve it later to let the robot turn while
+driving forward. Arcs, and trigonometry - you're going to love it!
+
+To make stepper work, I'm going to use *AccelStepper* library[^3]. Integration is fairly
+straightforward. You just repeat steps found in *Stepper chapter* twice, for each servo.
+Just be careful! The robot will try to run away!
+
+The code (source: [Stepper Integration](./assets/code/chapter_6/02_stepper_integration/02_stepper_integration.ino)) implements 5 states in which a robot chassis can operate, See
+the JSON contract proposed above. Code:
+
+```
+#include <AccelStepper.h>
+
+class Chassis {
+  const uint16_t MAX_SPEED;
+  const AccelStepper rightWheel; // default pinout:  (7, 5, 6, 4)
+  const AccelStepper leftWheel; //  default pinout: (PIN_A4, PIN_A2, PIN_A3, PIN_A1)
+
+public:
+  Chassis(uint16_t maxSpeed = 768,
+    uint8_t rPin0= 7, uint8_t rPin1 = 5, uint8_t rPin2 = 6, uint8_t rPin3 = 4,
+    uint8_t lPin0 = PIN_A4, uint8_t lPin1 = PIN_A2, uint8_t lPin2= PIN_A3, uint8_t lPin3 = PIN_A1)
+    : MAX_SPEED(maxSpeed),
+      rightWheel(AccelStepper::HALF4WIRE, rPin0, rPin1, rPin2, rPin3),
+      leftWheel(AccelStepper::HALF4WIRE, lPin0, lPin1, lPin2, lPin3) {
+        rightWheel.setMaxSpeed(MAX_SPEED);
+        leftWheel.setMaxSpeed(MAX_SPEED);
+  }
+
+  void driveForwards(uint8_t speed) {
+    auto stepperSpeed = 1 * mapSpeed(speed);
+    rightWheel.setSpeed(stepperSpeed);
+    leftWheel.setSpeed(stepperSpeed);
+  }
+  
+  void driveBackwards(uint8_t speed) {
+    auto stepperSpeed = -1 * mapSpeed(speed);;
+    rightWheel.setSpeed(stepperSpeed);
+    leftWheel.setSpeed(stepperSpeed);
+  }
+
+  void turnRight(uint8_t speed) {
+    auto stepperSpeed = 1 * mapSpeed(speed);
+    rightWheel.setSpeed(-stepperSpeed);
+    leftWheel.setSpeed(stepperSpeed);
+  }
+
+  void turnLeft(uint8_t speed) {
+    auto stepperSpeed = 1 * mapSpeed(speed);
+    rightWheel.setSpeed(stepperSpeed);
+    leftWheel.setSpeed(-stepperSpeed);
+  }
+
+  void stop() {
+    rightWheel.setSpeed(0);
+    leftWheel.setSpeed(0);
+  }
+
+  void run() {
+    rightWheel.runSpeed();
+    leftWheel.runSpeed();
+  }
+
+private:
+  int16_t mapSpeed(uint8_t speed) const {
+    return map(speed, 0, 255, 0, MAX_SPEED);
+  }
+};
+
+Chassis chassis;
+
+void setup() {
+  // put your setup code here, to run once:
+  chassis.driveForwards(200);
+}
+
+void loop() {
+  chassis.run();
+}
+
+```
+
+Private `mapSpeed()` function has been introduced to keep mapping logic in one place. If you recall
+the assumptions, the allowed speed value is between 0..255, hence the mapping. Note also how 
+`turnLeft()` and `turnRight()` functions are implemented. This is [differential drive](https://en.wikipedia.org/wiki/Differential_wheeled_robot) in which robot turns wheels in opposite
+directions to cause rotation. This also explains why we need a BB ball as bearing too :).
+
+The code is straightforward and no further analysis is required. Please, refer to 
+*Stepper motor* chapter if something here is unclear.
 
 ### JSON Contract integration
 
+By now, the robot can move and hit. It's time that the robot listens to our commands! Please,
+refer to *JSON contract* section above if you find some decisions confusing. We have already
+defined a set commands the robot should accept. It's time to just parse it and execute.
+
+Code (source: [JSON integration](./assets/code/chapter_6/03_json_integration/03_json_integration.ino)):
+```
+#include <ArduinoJson.h>
+
+JsonDocument json;
+
+template<class K, class V>
+class tuple {
+  public:
+  K key;
+  V value;
+  tuple(K key, V value) : key{key}, value{value} {}
+};
+
+class ChassisCommands{
+  public:
+  static constexpr const char * KEY_FORWARDS = "FWD";
+  static constexpr const char * KEY_BACKWARDS = "BWD";
+  static constexpr const char * KEY_TURN_LEFT = "T_L";
+  static constexpr const char * KEY_TURN_RIGHT = "T_R";
+  static constexpr const char * KEY_STOP = "STOP";
+
+  enum ChassisCmdEnum {
+    UNDEFINED,
+    FORWARDS,
+    BACKWARDS,
+    TURN_LEFT,
+    TURN_RIGHT,
+    STOP
+  };
+
+  static tuple<ChassisCmdEnum, uint8_t> convert(const JsonDocument &doc) {
+    if (doc.containsKey(KEY_FORWARDS)) {
+      return tuple<ChassisCmdEnum, uint8_t>(FORWARDS, doc[KEY_FORWARDS].as<uint8_t>());
+    } else if (doc.containsKey(KEY_BACKWARDS)) {
+      return tuple<ChassisCmdEnum, uint8_t>(BACKWARDS, doc[KEY_BACKWARDS].as<uint8_t>());
+    } else if (doc.containsKey(KEY_TURN_LEFT)) {
+      return tuple<ChassisCmdEnum, uint8_t>(TURN_LEFT, doc[KEY_TURN_LEFT].as<uint8_t>());
+    } else if (doc.containsKey(KEY_TURN_RIGHT)) {
+      return tuple<ChassisCmdEnum, uint8_t>(TURN_RIGHT, doc[KEY_TURN_RIGHT].as<uint8_t>());
+    } else if (doc.containsKey(KEY_STOP)) {
+      return tuple<ChassisCmdEnum, uint8_t>(STOP, doc[KEY_STOP].as<uint8_t>());
+    }
+    return tuple<ChassisCmdEnum, uint8_t>(UNDEFINED, 0);
+  }
+};
+
+class SledgehammerCommands{
+  public:
+  static constexpr const char * KEY_HIT = "HIT";
+  static constexpr const char * KEY_SET_SERVO_POSITION = "SPOS";
+  static constexpr const char * KEY_STOP = "STOP";
+
+  enum SledgehammerCmdEnum {
+    UNDEFINED,
+    HIT,
+    SET_SERVO_POSITION,
+    STOP
+  };
+
+  static tuple<SledgehammerCmdEnum, uint8_t> convert(const JsonDocument &doc) {
+    if (doc.containsKey(KEY_HIT)) {
+      return tuple<SledgehammerCmdEnum, uint8_t>(HIT, 0);
+    } else if (doc.containsKey(KEY_SET_SERVO_POSITION)) {
+      return tuple<SledgehammerCmdEnum, uint8_t>(SET_SERVO_POSITION, doc[KEY_SET_SERVO_POSITION].as<uint8_t>());
+    } else if (doc.containsKey(KEY_STOP)) {
+      return tuple<SledgehammerCmdEnum, uint8_t>(STOP, doc[KEY_STOP].as<uint8_t>());
+    }
+    return tuple<SledgehammerCmdEnum, uint8_t>(UNDEFINED, 0);
+  }
+};
+
+void applyChassisCommand(tuple<ChassisCommands::ChassisCmdEnum, uint8_t> cmd) {
+  // do chassis thing
+}
+
+void applyServoCommand(tuple<SledgehammerCommands::SledgehammerCmdEnum, uint8_t> cmd) {
+  // do servo thing
+}
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial);
+
+
+}
+
+void loop() {
+  if (Serial.available()) {
+    auto error = deserializeJson(json, Serial);
+    if (!error) {
+      auto chassisCmd = ChassisCommands::convert(json);
+      auto servoCmd = SledgehammerCommands::convert(json);
+
+      // business here 
+      applyChassisCommand(chassisCmd);
+      applyServoCommand(servoCmd);
+
+      // prepare response
+      json["chassisCmd"] = static_cast<int>(chassisCmd.key);
+      json["servoCmd"] = static_cast<int>(servoCmd.key);
+      serializeJson(json, Serial);      
+      Serial.println();
+      json.clear();
+    }
+  }
+}
+```
+
+Quick explanation. `loop()` functions periodically reads data from Serial. `deserializeJson` is
+a blocking, yet short, operations that awaits for a full JSON message. If you send a bulk message
+rather than typing characters one by one, we should be fine with it.
+
+The rest of the code is really handling the JSON. The critical part is parsing JSON keys to
+use them as `enum`. Enum normally is a good way to tokenize a set of commands to anything you do.
+`apply(Chassis|Servo)Command()` functions simply take an enum and a corresponding value and
+apply to the business rules we defined earlier. I also introduced a helper class/object
+to simplify coding: `tuple`. It provides a super-basic implementation of `std::pair`[^4]. Yet, it's
+good enough for us. You can code 8-bit AVRs with modern C++11|17|20 but some standard libraries
+are simply not available there.
+
+### Combining all elements together!
+
+Alright, it's time to combine everything together. The JSON integration part is the root of
+the project. Simply copy and paste stepper and servo integration steps. We'll need to implement
+two functions `applyChassisCommand()` and `applyServoCommand()`.
+
+Let's see how these functions can look like (full source code: [Full integration](./assets/code/chapter_6/04_integrated_code/04_integrated_code.ino)):
+
+```
+// [...]
+void applyChassisCommand(tuple<ChassisCommands::ChassisCmdEnum, uint8_t> cmd);
+void applyServoCommand(tuple<SledgehammerCommands::SledgehammerCmdEnum, uint8_t> cmd);
+
+static JsonDocument json;
+static WeaponizedServo sledgehammer;
+static Chassis chassis;
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial);
+  sledgehammer.init();
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+  // cmd handling
+  }
+
+  chassis.run();
+  WeaponizedServo::tick();
+}
+void applyChassisCommand(tuple<ChassisCommands::ChassisCmdEnum, uint8_t> cmd) {
+  switch (cmd.key) {
+    case ChassisCommands::FORWARDS:
+      chassis.driveForwards(cmd.value);
+      break;
+    case ChassisCommands::BACKWARDS:
+      chassis.driveBackwards(cmd.value);
+      break;
+    case ChassisCommands::TURN_LEFT:
+      chassis.turnLeft(cmd.value);
+      break;
+    case ChassisCommands::TURN_RIGHT:
+      chassis.turnRight(cmd.value);
+      break;
+    case ChassisCommands::STOP:
+      chassis.stop();
+      break;
+    default:
+      // unsupported operation
+      [[fallthrough]];
+  }
+}
+
+void applyServoCommand(tuple<SledgehammerCommands::SledgehammerCmdEnum, uint8_t> cmd) {
+  switch (cmd.key) {
+  case SledgehammerCommands::HIT:
+    if (sledgehammer) {
+      sledgehammer.hit();
+    }
+    break;
+  case SledgehammerCommands::SET_SERVO_POSITION:
+    sledgehammer.changePosition(cmd.value);
+    break;
+  case SledgehammerCommands::STOP:
+    sledgehammer.defaultPosition();
+    break;
+  default:
+    // unsupported operation
+    [[fallthrough]];
+  }
+}
+```
+
+Hope you noticed two huge switches! This is one way to control commands in a microcontroller.
+Switch is simple and easy to read. Another way is to create an array or a map of function
+pointers. That would somehow easier to read but way more complicated from the language perspective.
+AVR toolchains does not come with `std::function` to at least minimally simplify the implementation.
+Hence, the switches.
+
+Not much to talk about really. Just read it carefully, you'll understand it perfectly. Some remarks, 
+though:
+* `static` JsonDocument, Chassis and WeaponizedServo - static here means to keep these
+variables in a single compilation unit (think: file). If you decide to use it in different files, the 
+objects won't work. It's a very C/C++-related thing. Just browse the keyword. `static` means many,
+too many things in C++
+* `setup()`, don't forget to initialize Serial and the servo!
+* `loop()`, don't forget to run your `tick()` and `run()` methods. Otherwise, the steppers and the 
+servo won't work!
+* `if(sledgehammer)` this statement uses an overloaded bool operator. Simply, the logic
+does not allow initiating a hit in the middle of the previous hit. You can of course play with it.
+* `apply(Stepper|Servo)Command()` definition has been split into separate definitions and declarations.
+
+
+The Arduino file is quite huge by now ~250 lines by now. It's worth to refactor it into separate
+files. You can also see how heavy the firmware is:
+
+```
+Sketch uses 16582 bytes (53%) of program storage space. Maximum is 30720 bytes.
+Global variables use 579 bytes (28%) of dynamic memory, leaving 1469 bytes for local variables. Maximum is 2048 bytes.
+```
+
+Remember previous chapters? Direct hardware access can heavily optimize resource usage. On the
+other hand, it wouldn't be so easy to implement as shown above.
+
 ### Serial Monitor tests
 
+It's testing time! Open your serial terminal and make sure to set baudrate to `115200`.
+Try issuing the following commands, one after another (say with several second delay 
+between each call so you can see what your robot does!). The servo is the first one for testing:
+
+```
+{"HIT":0}
+{"HIT":0}
+{"HIT":0}
+{"SPOS":90}
+{"SPOS":10}
+{"SPOS":170}
+{"STOP":0}
+```
+
+It's working!
+
+![Start Wars - it's working meme](https://media0.giphy.com/media/BoBOKNtlR8rTi/giphy.gif?cid=790b76112cbe3e5f14b18897d36fec69f238f5b70bd3282f&rid=giphy.gif&ct=g)
+
+Yes, it's working but not the way I expected. The weaponized servo is rather slow... It was supposed
+to be 350ms to complete a cycle. It's definitely more like 1-2s... Why is that!? It's debugging time!
+
+Of course, my educated guess immediately blames the `deserializeJson()` blocking operation. The
+function blocks all operations, including the `tick/run` operations in the main loop. Therefore,
+the `Timer<2>` in the `WeaponizedServo` cannot trigger `defaultPosition()` method on time. In other
+words, we need to find a way to alleviate the problem:
+* Use a different way to deserialize JSON, i.e., skip JSON processing until a new line character `\n`
+arrives
+* Set a better serial timeout, say 50ms of blocking
+* Assume a minimal number of characters in *Serial* cache. This is to prevent from entering
+the `deserializeJson()` section
+* Run the ticks in a separate thread/ISR (as mentioned in 
+[Controlling Stepper Motors](chapters/4_stepper_motor.md))
+* Something else...
+
+I chose setting a better timeout, effectively making the loop() running at frequency 50Hz
+(Serial timeout set to 20ms). It means that *Serial* blocks the main loop for:
+
+```
+void setup() {
+  Serial.setTimeout(20);
+  Serial.begin(115200);
+  while (!Serial);
+  sledgehammer.init();
+}
+```
+
+It works much better now! You can also play with `if (Serial.available()) > 0` line. Say, the shortest
+command is `{"HIT":0}` is 9 characters.  Your patch may look like this: `if (Serial.available()) > 8`. It also works reasonably well. You can choose also some harder ways to fix it. It's up to you :)!
+
+Alright, the robot can hit opponents but how does it ride? Let's test it! Make sure your robot
+is secured so it does not fall. Run some commands:
+
+```
+{"FWD":100}
+{"FWD":255}
+{"STOP":0}
+{"BWD":255}
+{"T_R":128}
+{"T_L":128}
+{"STOP":0}
+```
+
+Everything seems to work, that's great news! Now, the final test, combine both driving and hitting!
+
+```
+{"FWD":100,"HIT":0}
+{"BWD":100,"HIT":0}
+{"T_R":150,"HIT":0}
+{"T_0":150,"HIT":0}
+
+```
+
+This feature seems to work too!!!
+
+## Conclusions
+
+Fantastic job! You built and coded your own robot!!! That's a huge achievement!
+You are familiar with all the basic tools to create wonderful items. You also have deeper,
+low level understanding of how Arduino works! You skilled up at debugging and most importantly
+you know how to combine different fields of engineering together!
+
+If you think about the next step, I strongly suggest playing with different platforms, 
+especially Raspberry Pico and STM32. These are way more powerful controllers with decent
+community support.
+
+That's all! You are on your own in this amazing journey of the embedded world! Good luck, have fun, try not hurt yourself in the process!
 
 
 
 # References
 
 [^1]: [Motor Micro SG92R](https://protosupplies.com/product/servo-motor-micro-sg92r/)
+[^2]: [Arduino Timer Library](https://www.arduino.cc/reference/en/libraries/arduino-timer/)
+[^3]: [Arduino AccelStepper library](https://www.arduino.cc/reference/en/libraries/accelstepper/)
+[^4]: [C++ Reference - std::pair](https://en.cppreference.com/w/cpp/utility/pair)
