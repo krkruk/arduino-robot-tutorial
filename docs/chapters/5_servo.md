@@ -12,7 +12,7 @@ This chapter is all about servomechanisms, servos for short. You will learn:
 
 A servomechanism (servo) is a feedback system that uses a closed-loop controller to set
 and actively adjust its position and/or velocity as an actuator[^1], [^2]. There are many types of
-servos i.e., hydraulic, pneumatic, electric [^1]. In this tutorial, we shall use a typical
+servos i.e., hydraulic, pneumatic, electric [^1]. In this tutorial, we shall focus on typical
 positional rotation DC motor servos, often used in RC control models.
 
 Let's quickly decipher the definition to fit our context:
@@ -20,7 +20,8 @@ Let's quickly decipher the definition to fit our context:
 * servo does keep its position
 * servo can be controller with a microcontroller
 
-Internally, a servo is an effector (here: a DC motor) wrapped with electronics that read and control its position. To read a position you need some sort of 
+Internally, a servo is an effector (here: a DC motor) wrapped with electronics that read and 
+control its position. To read a position you need some sort of 
 [*encoder*](https://en.wikipedia.org/wiki/Encoder_(position)). You also need a control 
 mechanism/circuitry to read the position and correct it.
 Often, it's a microcontroller with custom software, usually a [PID controller](https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller). 
@@ -88,7 +89,8 @@ Moreover, you need to create an object of type `Servo`: `static Servo servo;`.
 The next step is to simply connect the servo object (software) with your *more tangible* servo, the hardware on pin 9: `servo.attach(SERVO_PIN); // SERVO_PIN=9`.
 
 Finally, we want to use the servo, so it's business time. The logic shall move servo handle/hook/rudder
-in increments of 45 degrees. To issue a command and set a desired position, you need to run `servo.write(angle);` command. Don't forget about a reasonable delay so the servo move can take an effect.
+in increments of 45 degrees. To issue a command and set a desired position, you need to run `servo.
+write(angle);` command. Don't forget about a reasonable delay so the servo can make a move.
 
 Once you compile the software and deploy it to your microcontroller, you'll observe how the servo
 moves. Congratulations! It's working! It's alive!
@@ -140,22 +142,26 @@ void applyServoPosition(uint8_t angle) {
 The example employs *ArduinoJson* and *Serial* to let you control the servo with your Serial Monitor.
 The calibration for such a servo can be complicated task if you need to perform extra precise 
 operations (see: [Metrology](https://en.wikipedia.org/wiki/Metrology)). It can be also very simple if 
-you need it for non-critical applications. As most of us love taking a simple route, let's play with this line: `servo.attach(SERVO_PIN, 540, 2540)`.
+you need it for non-critical applications. As most of us love taking a simple route, let's 
+play with this line: `servo.attach(SERVO_PIN, 540, 2540)`.
 How did I come up with it? Well, you start with the default values and you issue a command:
 
 ```
 {"pos":0}
 ```
 
-in Serial Monitor. Then, you take a look at the servo and see if the handle is parallel enough to the 
-servo case. The first value *540* is the minimum (by default Arduino uses: *544*). You subtract
-the value if the parallelism is overshot or add if the handle goes back a bit too much. You take a similar approach for the next position:
+in Serial Monitor. This is the default state. Connect a handle/needle/rudder as parallel to the servo 
+case as possible. Then, If you cannot achieve parallelism regardless of the handle rotation, you need
+to adjust the timings in software. The first value *540* is the minimum (by default Arduino uses: 
+*544*) that corresponds to 0degree position. You subtract
+the value if the parallelism is overshot, or add if the handle goes back a bit too much. You take a 
+similar approach for the next position:
 
 ```
 {"pos":180}
 ```
 You issue this command in the Serial Monitor. By default, Arduino assumes the max value to *2400*.
-Clearly, my handle never reached real 180 degree movement so I needed to increase it up to *2540*.
+My handle never reached real 180 degree movement so I needed to increase it up to *2540*.
 The magic values you enter are microseconds (*1us=10<sup>-6</sup>s*). The library uses 16-bit timer
 to generate interrupts at frequency of 2MHz (16MHz CPU freq, and prescaler=8), which translates to 
 *0,0000005s = 0.5us` resolution. This is how often the library processes an ISR procedure to
@@ -182,7 +188,8 @@ look like? An oscilloscope can provide some details:
 *<br />Figure: Oscilloscope - servo at 180 deg, zoom in, 500us grid resolution*
 
 Take a look at any *zoom-out* chart, with *10ms* resolution. The diagram is showing peaks at 20ms
-intervals, which translates to 50Hz PWM frequency. The *zoom-in* diagram is scaled in *500us* resolution. You can see how wide the peak is, which in our case is slightly more than 500us and 
+intervals, which translates to 50Hz PWM frequency. The *zoom-in* diagram is scaled in *500us* 
+resolution. You can see how wide the peak is, which in our case is slightly more than 500us and 
 2500us, just as we programmed it! Isn't it wonderful?
 
 Alright, we're done with the library. Go ahead and check the documentation or simply see the library
@@ -268,7 +275,8 @@ it solely with hardware. Good job!
 # Summary
 
 You should be pretty comfortable with controlling servos by now. There are also different servos, 
-some name them digital. The difference is you don't need PWM to control them, you need UART.
+some people names them *digital*. The difference is you don't need PWM to control them, you need UART
+or effectively any specified communication protocol (check servo specs!).
 Usually this kind of a servo is more expensive as it provides additional feedback information
 such as position, power use and allow using it as a regular motor (continuously rather than just
 angle control).

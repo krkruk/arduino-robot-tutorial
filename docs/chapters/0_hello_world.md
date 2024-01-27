@@ -1,6 +1,10 @@
 # Hello world!
 
-This is a quick walkthrough to install your very first application on a microcontroller. It's the only section that does not require any software experience :)
+**Contents**
+* toc
+{:toc}
+This is a quick walkthrough to install your very first application on a microcontroller. 
+It's the only section that does not require any software experience :)
 
 ## Arduino IDE
 Launch your Arduino IDE, you should see something like this (AD2023):
@@ -23,7 +27,7 @@ comes with your dev board. Note `LED_BUILTIN` constant, we'll take about it late
 Now it's time to compile it! There are three buttons in your toolbar (the area under `File | Edit | Sketch | Tools | Help` menu bar). 
 
 The tick button compiles your application. In other words, it translates the text you wrote (or 
-in this case, simply downloaded) into a binary file.
+in this case, the code you simply downloaded) into a binary file.
 
 The right arrow button compiles and upload the application to the device you selected earlier on a given port.
 
@@ -31,7 +35,7 @@ Click the right arrow button. As a result, you should see a window like this:
 
 ![Arduino IDE: Compiling and uploading the firmware](./assets/images/chapter_0/2_ardu_ide_app_uploaded_successfully.png)
 
-Take a look at your board! Do you see it! It's blinking! Good job, you've just become an embedded developer :)
+Take a look at your board! Do you see it?! It's blinking! Good job, you've just become an embedded developer :)
 
 More on Blink example can be found on Arduino website [^1].
 

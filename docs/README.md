@@ -35,7 +35,7 @@ Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchi
 
 To complete the tutorial, you'll need:
 
-* 1x Cytron Nano board
+* 1x Cytron Nano board (Arduino Nano board is a good choice too, though provides fewer features)
 * 2x 28BYJ-48 stepper motors with ULN2003 driver (Darlington amp)
 * 1x SG-92R servo (or similar)
 * 1x set of jumper leads
@@ -61,7 +61,7 @@ To complete the tutorial and build a robot, you'll need:
 
 Additionally:
 * 1x plastic 6mm airsoft BB
-* rubber strips to form a tyre (adhesive required). I used a window gasket/seal and cut it long enough (well, it's wheel circumference)
+* rubber strips to form a tyre (adhesive required). I used a window gasket/seal for this purpose
 
 That's your bearing and a part of the rear axle. Some basic tools, glue 
 and an electrical tape, and a few zip ties can be quite handy too.
@@ -71,7 +71,7 @@ All STL files can be downloaded from this tutorial repository: [3d_models](https
 The robot has been design to require no screws, bolts, anything. It's ugly but functional :).
 Printing instruction:
 
-* PLA is good enough. Some elements require precision: 0.1mm or so.
+* PLA is good enough. Some elements require precision of ~0.1mm 
 * 6-10% fill
 * 2 line wall thickness
 
@@ -96,16 +96,28 @@ Now, sometimes it's easier to compile software in Arduino IDE than in VSCode. Yo
 If you are impatient and want the robot now without following the tutorial,
 here are all the steps you need to create your robot.
 
-* 3d-print all elements you find in [`3d_models`](/3d_models/README.md) directory. Use \*.stl files
+* 3d-print all elements you find in [`3d_models``](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models) directory. Use \*.stl files
   in your favorite slicer software
-* Follow the pinout as shown in Fritzing diagram
+* Follow the pinout as shown in the table
 * Install the software on your Cytron board. Use README file distributed alongside
   the source code
 
+**PINOUT**
+
+| Device            | Arduino Pin |
+| ----------------- | ----------- |
+| Servo PWM line    | D9          |
+| Right Stepper IN1 | D7          |
+| Right Stepper IN2 | D6          |
+| Right Stepper IN3 | D5          |
+| Right Stepper IN4 | D4          |
+| Left Stepper IN1  | PIN_A4      |
+| Left Stepper IN2  | PIN_A3      |
+| Left Stepper IN3  | PIN_A2      |
+| Left Stepper IN4  | PIN_A1      |
 
 
 ### References
 
 [^1]: [GCC AVR Toolchain](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio/gcc-compilers)
-
 [^2]: [AVRDude](https://github.com/avrdudes/avrdude)

@@ -10,7 +10,7 @@ Quick intro to stepper motors. There are two types of stepper motors considering
 transistor. Inside of such a stepper motor, two coils are connected with a common lead. You need to generate a correct sequence to drive it.
 * bipolar[^2] - electricity flow must be reverted to change a direction of a shaft spin. This is normally achieved with a help of an H-bridge
 
-In this tutorial we shall handle only the unipolar case. Still, once you get the idea of controlling
+In this tutorial, we shall handle only the unipolar case. Still, once you get the idea of controlling
 unipolar motors, it won't be difficult to learn controlling the bipolar ones. Hope, you bought 
 28BYJ-48 stepper motor along with ULN2003 driver. The driver is a [Darlington chip](https://en.wikipedia.org/wiki/Darlington_transistor).
 
@@ -90,7 +90,7 @@ void loop() {
 }
 ```
 
-There are for `#define` statements that provide a pinout as suggested in the table above. It's a good
+There are four `#define` statements that provide a pinout as suggested in the table above. It's a good
 practice to create constants for your pinouts. It's easier to change it in future and, most 
 importantly, improves readability.
 
@@ -106,7 +106,7 @@ trial-and-error than you think. I managed to get satisfying results with `4ms ->
 Hope the code is self explanatory. If your stepper still doesn't spin, make sure you connected it
 accordingly. Check GND leads! Check power source and check if no loose leads hanging in the air. If 
 you see tiny movements, you may want to experiment with `#define` pinout and change a sequence. Yet 
-again, trial-and-error. You'll get used to.
+again, trial-and-error. You'll get used to it.
 
 We're done with Arduino approach. Let's take a look at Atmega, registry-based implementation 
 (source: [Arduino Full Step Atmega](./assets/code/chapter_4/stepper_full_step_atmega/stepper_full_step_atmega.ino)):
@@ -161,8 +161,9 @@ int main() {
 *PD4..7* correspond to to Arduino pins D4..7.
 
 `move_stepper_full_step_naive()` implements a naive full step stepper control. It's naive because
-it uses the whole `PORTD` register to set up a value on PINs. If you decide to use anything else
-in parallel, the function shall override your pin states. Moreover, this repetetive assign-delay 
+it uses the whole `PORTD` register to set up a value on PINs (see the assignment `=` operator). 
+If you decide to use anything else in parallel, the function shall override your
+any other pin states. Moreover, this repetetive assign-delay 
 sequence certainly can be optimized! Although, copy-paste approach is not always a bad idea in
 microcontrollers. Sometimes it's better to use more disk space for you hex program 
 rather than compute these values on flight and lose precious CPU cycles.
@@ -179,7 +180,7 @@ It's crucial to give your hardware some time *to think* ;).
 
 ## Half step control
 
-Full step method activates a single coils and expects a stator is attracted to the coil. In the half
+Full step method activates a single coil and expects a stator is attracted to that coil. In the half
 step control, you can activate two coils to catch the stator in between! The stator is hold
 between the full step, hence the half step control. It means there are 8 separate states that one needs to handle:
 
@@ -347,19 +348,23 @@ Note that the library uses a different sequence of pins. See constructor documen
 details[^6]. The documentation doesn't provide a pinout sequence. You need to determine it on
 your own or... change the wiring. Yet another heuristic step and trial-and-error approach.
 
-`AccelStepper::setMaxSpeed()` function requires max steps per second parameter. There is no clear documentation on
-that so this is guestimation as well. My stepper works well with 768steps/second quite well.
+`AccelStepper::setMaxSpeed()` function requires max steps per second parameter. 
+There is no clear documentation on that so this is guestimation as well. 
+My stepper works well with 768steps/second quite well.
 
-`AccelStepper::setSpeed()` sets the current speed for the stepper. You can change it dynamically if you want. The 
-library offers a more precise control: applying a predefined number of steps. This is good if you want
-to move a certain distance with your robot. We'll get there!
+`AccelStepper::setSpeed()` sets the current speed for the stepper. 
+You can change it dynamically if you want. The 
+library offers a more precise control: applying a predefined number of steps. 
+This is good if you want to move a certain distance with your robot. We'll get there!
 
 Finally, `AccelStepper::runSpeed()` applies another step. Note that there should be no blocking waits
 in the main `loop()` of the program. Otherwise, your will won't spin. Keep your main loop as short as
 possible to provide smooth stepper experience. 
 
-Sorry, you can't really spin up another thread... well, you can use a timer to perform an action inside asynchronously (to a degree). Let's give it a try. This time, I'm using Timer2 and CTC mode. Timers can create PWM signals but also can precisely measure time and execute an action when
-an internal counter clears.
+Sorry, you can't really spin up another thread... well, you can use a timer to perform an action 
+inside asynchronously (to a degree). Let's give it a try. This time, I'm using *Timer2* and 
+*CTC mode*. Timers can create PWM signals but also can precisely measure 
+time and execute an action when an internal counter clears.
 
 I want to set up something that allows to run 768ticks in a second. The formula for CTC is (see: 
 *Figure 17-5. CTC Mode, Timing Diagram*[^7]):
@@ -367,7 +372,9 @@ I want to set up something that allows to run 768ticks in a second. The formula 
 $$ f_{OCnx} =  \frac {f_{clk_{I/O}}}{2 \cdot N \cdot (1 + OCR_{nx})}$$
 
 OCR<sub>nx</sub> should be then:
+
 $$ OCR_{nx} =  \frac {f_{clk_{I/O}}}{2 \cdot N \cdot f_{OCnx}} - 1$$
+
 where:
   * OCR<sub>nx</sub> - value to clear/trigger an event, must be 8-bit value
   * `N` - prescaler
@@ -375,9 +382,10 @@ where:
   * f<sub>OCnx</sub> - desired frequency, here: 768Hz
 
 clearly, N=64 seems to be a good solution, `OCR_{nx} = 161,7604... ~= 162`. This precision is good 
-enough for all purposes. It's a systematic error that you can compensate later. You also need an ISR
-vector for the OCR2. You can find it in `#include <avr/io.h>` or `#include <avr/iom328p.h>` file.
-`TIMER2_COMPA_vect` is a choice of ours (`TIMER2_COMPB_vect` will not be allocated, let's leave it).
+enough for out purposes. It's a [systematic error](https://en.wikipedia.org/wiki/Observational_error)
+that you can compensate later. You also need an ISR vector for the OCR2. You can
+ind it in `#include <avr/io.h>` or `#include <avr/iom328p.h>` file. `TIMER2_COMPA_vect` 
+is a choice of ours (`TIMER2_COMPB_vect` will not be allocated, let's leave it).
 Now we have all we need, let's code!
 
 > [!NOTE]

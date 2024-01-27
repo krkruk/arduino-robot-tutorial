@@ -8,19 +8,34 @@ Hopefully, you own an Arduino Nano-compatible board, just like the Cytron's one 
 [<img alt="Cytron Maker Nano pinout" src="https://www.cytron.io/image/catalog/products/maker-nano/maker-nano-pinout.png" />](https://www.cytron.io/p-maker-nano-simplifying-arduino-for-projects)
 
 > [!IMPORTANT] 
-> I strongly support original Arduino to support the the idea behind it! Arduino enabled thousands of people to develop hardware reducing the entry barrier. I strongly encourage to buy yourself one!
+> I strongly encourage you to support the original Arduino Project and the idea behind it! 
+> Arduino enables thousands of people to develop hardware reducing the learning curve.
+> I strongly encourage to buy yourself one!
 
-The project can be completed using a standard Arduino Nano board if you exclude a buzzer. The Cytron's board adds new features such as LEDs in all GPIO, a programmable button, and a buzzer. It's a nice touch if you want to reduce wiring in your final project.
+The project can be completed using a standard Arduino Nano board.
+ The Cytron's board adds new features such as LEDs in all GPIO, a programmable button, and a buzzer. 
+ It's a nice touch if you want to reduce wiring in your final project.
 
 > [!NOTE] 
-> The board uses CH340C as a UART-USB converter. It's may not be compatible with your operating system ot of the box. In *Ubuntu 22.04.3 LTS*, you'll need to configure it by uninstalling a package from your system (it disables braille display): `sudo apt remove brltty` [^1]. MS Windows may require similar steps.
+> The board uses CH340C as a UART-USB converter. It's may not be compatible with your operating system out of the box. 
+> In *Ubuntu 22.04.3 LTS*, you'll need to configure it by uninstalling a package from your 
+> system (it disables braille display): `sudo apt remove brltty` [^1]. MS Windows may require similar steps.
 
-The Cytron's board uses Atmega328P as it's main microcontroller in the TQFP package. Luckily, you don't need to follow PCB paths to determine which board pin correspond to which IC pin. The pinout diagram above does it perfectly! Still, if it happens one day you need create your own PCB, it's worth to know physical dimensions and properties of your microcontroller. You also want make yourself familiar with the original datasheet: [Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf). The datasheet provides all necessary information you need to start coding your IC (integrated circuit) and tech specs that you should follow
+The Cytron's board uses Atmega328P as it's main microcontroller in the TQFP package. Luckily, you don't need 
+to follow PCB paths to determine which board pin correspond to which IC pin. The pinout diagram above does 
+it perfectly for you! Still, if it happens one day you need create your own PCB, it's worth to know physical 
+dimensions and properties of your microcontroller. You also want make yourself familiar with the original datasheet: 
+[Atmega328P Datasheet](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf). 
+The datasheet provides all necessary information you need to start coding your microcontroller 
+and tech specs that you should follow.
 
 ## PORTs, PINs and power output
 
-What a port, then? Well, a port in a realm of microcontroller is a module that connects ALU (Arithmetic Logic Unit) with a world by receiving/generating electric signals on a set of pins.
-A pin is a physical connector that one can solder onto a PCB. Pins are the true interface that the IC uses to interact with the world
+What is a port, then? Well, in a realm of microcontroller, a port is a module that connects ALU 
+(Arithmetic Logic Unit) with the world by receiving/generating electric signals on its set of pins
+(input/output leads).
+A pin is a physical connector that one can solder onto a PCB. Pins are the true interface 
+that the IC uses to interact with the world.
 
 Atmega328p has 3 ports (PORTB, PORTC, PORTD) with built-in pull-up resistors. The 
 microcontroller can therefore support up to 23 input/output pins 
@@ -30,7 +45,7 @@ please refer to the documentation (chapter: 2). The block diagram (extracted fro
 ![Source: Atmega 328p datasheet, Chapter 2.1 Block diagram](./assets/images/chapter_1/1_io_atmega_block_diagram.png)
 
 That's a theory. You are not soldering your own PCB, you bought an off-the-shelf one. It means, 
-you need to map pins defined in Atmega datasheet to your board outputs. Your Cytron's Nano is 
+you don't need to map pins defined in Atmega datasheet to your board outputs. Your Cytron's Nano is 
 compatible with the original Arduino Nano, therefore you can re-use all resources known in 
 Arduino to your advantage. Compare Cytron's pinout (the very first image in this page) with the 
 table and the Arduino pinout below.
@@ -47,7 +62,10 @@ table and the Arduino pinout below.
 [<img alt="Arduino Nano Pinout" src="https://www.electronicshub.org/wp-content/uploads/2021/01/Arduino-Nano-Pinout.jpg" />](https://www.electronicshub.org/arduino-nano-pinout/)
 
 `D\d` (for instance: `D8`, `D13`) is an alias for a given pin Arduino ecosystem. You don't need to
-memorize anything. Your board has all the markings printed on the PCB solder mask itself. You will use the very same aliases such as `D8`, `D13` in your code if you decide to use Arduino framework. The Atmega328P names correspond to aliases found in Atmega toolchain and are simply a shorthand for underlying pin addresses (i.e., `0x00`). You definitely want to use these aliases for readability.
+memorize anything. Your board has all the markings printed on the PCB solder mask itself. 
+You will use the very same aliases such as `D8`, `D13` in your code if you decide to use Arduino framework. 
+The Atmega328P pin aliases found in Atmega toolchain and are simply a shorthand for 
+underlying pin addresses (i.e., `0x00`). You definitely want to use these aliases for readability.
 
 If you want to know more about Nano board, you can refer to this page [^2].
 
@@ -55,14 +73,19 @@ If you want to know more about Nano board, you can refer to this page [^2].
 
 > [!IMPORTANT] 
 > Atmega328p pins are limited to 20mA (milli amps) per pin and up to 100/150mA for 
-a port. You should not connect anything more amp-consuming to a port directly. Use a transistor 
-to amplify a digital signal to an output that can handle bigger loads. You can read more on 
-amplifiers in [Wiki](https://en.wikipedia.org/wiki/Category:Single-stage_transistor_amplifiers). Please, see also *28. Electrical Characteristics* in your Atmega datasheet [^3].
+> a port. You should not connect anything more amp-consuming to a pin directly. Use a transistor 
+> to amplify digital signals to an output that can handle bigger loads. You can read more on 
+> amplifiers in [Wiki](https://en.wikipedia.org/wiki/Category:Single-stage_transistor_amplifiers). 
+> Please, see also *28. Electrical Characteristics* in your Atmega datasheet [^3].
 
 One more thing, Arduino Nano works in 5V logic. It means the high state (also referred as *1*) is 
-5V and the low state is 0V (you guessed it! It's referred as *0*). That's the ideal condition, of course. In the real world, *0* state can be considered as 1/3 VDD or lower of your voltage supply. Similarly, the high state is 2/3 VDD or higher [^4]. You can also refer to *28.2 DC Characteristics* in datasheet for more details on input/out (high|low) voltages [^3].
+5V and the low state is 0V (you guessed it! It's referred as *0*). That's the ideal condition, of course.
+In the real world, *0* state can be considered as 1/3 VDD or lower of your voltage supply. 
+Similarly, the high state is 2/3 VDD or higher [^4]. You can also refer to *28.2 DC Characteristics* 
+in datasheet for more details on input/out (high|low) voltages [^3].
 
-Lots of theory, and no code so far. It's time to change it. Let's take a closer look to the blinking example we had in the previous chapter:
+Lots of theory, and no code so far. It's time to change it. Let's take a closer look to the 
+blinking example we had in the previous chapter:
 
 ```
 // Source: https://github.com/arduino/arduino-examples/blob/main/examples/01.Basics/Blink/Blink.ino
@@ -81,39 +104,54 @@ void loop() {
 }
 ```
 
-The `setup` function initializes hardware. It includes setting up a desired state on a pin, interrupts, serial devices. Effectively, anything you need to run your main application code in a loop.
+The `setup()` function initializes hardware. It includes setting up a desired state on a pin,
+interrupts, serial devices, etc.. Effectively, anything you need to run your main application code should
+be placed within the `loop()`.
 
-The `loop` function is effectively anything you want to run indefinitely as your firmware. This involves all ALU operations you want to run with help of your peripherals such as I/O pins, UART etc.
+The `loop()` function is effectively anything you want to run indefinitely as your firmware. 
+This involves all ALU operations you want to run with help of your peripherals such as I/O pins, UART etc.
 
-In order to blink an LED you always need to configure your port by telling a direction of a given pin, whether it's an input or output. Possible options: `OUTPUT`, `INPUT`, `INPUT_PULLUP`.
+In order to blink an LED you always need to configure your port by telling a direction of a given pin, 
+whether it's input or output. Possible options: `OUTPUT`, `INPUT`, `INPUT_PULLUP`.
 
-Once this is done, you can then either write or read a pin state, depending on your direction configuration. To do so, you can use `digitalWrite(<<pin alias>>, <<state>>)` function. *Pin alias* can be a `uint8_t` value or a label such as `LED_BUILTIN`. *State* can be either `LOW` or `HIGH`.
+Once this is done, you can then either write or read a pin state, depending on your direction configuration. 
+To do so, you can use `digitalWrite(<<pin alias>>, <<state>>)` function. 
+*Pin alias* can be a `uint8_t` value or a label such as `LED_BUILTIN`. *State* can be either `LOW` or `HIGH`.
 
 Let's connect your own LED... You need an LED and a resistor. You should never connect an LED to a DC output as you will likely fry it. 
 
 ![Basic LED circuit](./assets/images/chapter_1/2_led_connection.svg)
 
-First of all, if you have on experience in electronics you must know that LED is directional.
+First of all, if you have some experience in electronics you must know that LED is directional.
 It means it acts as conductor if connected with correct polarity. If you connect it the other way 
-around it won't conduct (well... until it does, briefly :). The term is reverse current and it can be feature sometimes. ). As this is no electric component 101 tutorial, I suggest to take a look at Wiki [^5]. If you are in rush, I recommend taking a look at [voltage-current chart](https://en.wikipedia.org/wiki/File:Forward_and_Reverse_Characteristics_for_diodes-en.svg) to understand how different LEDs can be.
+around it won't conduct (well... until it does, briefly :)). The term is reverse current and it 
+can be a feature sometimes). As this is no electric component 101 tutorial, 
+I suggest to take a look at Wiki [^5]. If you are in rush, I recommend taking a look at 
+[voltage-current chart](https://en.wikipedia.org/wiki/File:Forward_and_Reverse_Characteristics_for_diodes-en.svg)
+ to understand how different LEDs can be.
 
 S<sub>1</sub> voltage supply is the Arduino. It gives you 5V. LED requires 0.7V and 0.2mA to
-light up. Now, you need to calculate what resistor is needed. The formula uses [Ohm's Law](https://en.wikipedia.org/wiki/Ohm%27s_law) and some [principles on connecting circuits](https://en.wikipedia.org/wiki/Kirchhoff%27s_circuit_laws) in series. I transformed it so it corresponds to the circuit
+light up. Now, you need to calculate what resistor is needed. 
+The formula uses [Ohm's Law](https://en.wikipedia.org/wiki/Ohm%27s_law) and some 
+[principles on connecting circuits](https://en.wikipedia.org/wiki/Kirchhoff%27s_circuit_laws) in series. 
+I transformed it so it corresponds to the circuit
 
 $$ R_1 = \frac{S_1 - D_1}{I} = \frac{5V - 0.7V}{20 \cdot 10^{-3}A} = 215 \frac{V}{A} = 215\Omega $$
 
-Isn't the physics is electrics amazing? Now, you need to pick a resistor that matches the 
+Isn't the physics of electrics amazing? Now, you need to pick a resistor that matches the 
 calculations. If you apply lower resistance value, you may fry your LED. I suggest to pick 220Ohm
- resistor or higher. It's all math and diagrams. How to connect it? Well, let's go back to 
- physical world. An LED has two leads: a short one and a longer one. The longer one is the 
- '<strong>+</strong>' (katode) and the shorter one is '<strong>-</strong>' (anode). You want to connect your polarities in series, ie: `V+ - +R- - +D- - -V`. 
- A '-' in component is a plus for the other one. You can also take a look at Adafruit's tutorial 
- for more details [^6]. Oh, and as an interesting fact - the [colors on your resistor](https://en.wikipedia.org/wiki/Electronic_color_code) packaging matter!.
+resistor or higher. It's all math and diagrams. How to connect it? Well, let's go back to 
+physical world. An LED has two leads: a short one and a longer one. The longer one is the 
+'<strong>+</strong>' (katode) and the shorter one is '<strong>-</strong>' (anode). 
+You want to connect your polarities in series, ie: `V+ - +R- - +D- - -V`. 
+A '-' in component is a plus for the other one. You can also take a look at Adafruit's tutorial 
+for more details [^6]. Oh, and as an interesting fact - the 
+[colors on your resistor](https://en.wikipedia.org/wiki/Electronic_color_code) packaging matter!.
 
- Please, construct your circuit as proposed here. You can use your jumper cables if you want:
- ![Arduino circuit](./assets/images/chapter_1/3_led_connection_arduino.jpg)
+Please, construct your circuit as proposed here. You can use your jumper cables if you want:
+![Arduino circuit](./assets/images/chapter_1/3_led_connection_arduino.jpg)
 
- Now, the coding part! It's not that complicated
+Now, the coding part! It's not that complicated
 (source [Incremental blink](./assets/code/chapter_1/1_incremental_blink/)):
 
 ```
@@ -144,9 +182,11 @@ void loop() {
 }
 ```
 
-The code increases delay time in each consecutive led state, i.e, 200ms - LOW, 300ms - HIGH and so on. Note a new constant `HARDWARE_LED` - it matches `D8` pin in the Fritzing diagram above.
+The code increases delay time in each consecutive led state, i.e, 200ms - LOW, 
+300ms - HIGH and so on. Note a new constant `HARDWARE_LED` - it matches `D8` pin in the Fritzing diagram above.
 
-Ok, so how does it look like in pure AVR then. Well, what Arduino does is really this:
+Ok, so how does it look like in pure AVR then. Well, in AVR context `setup()` and `loop()` functions
+translate to this form:
 
 ```
 int main() {
@@ -157,7 +197,9 @@ int main() {
 }
 ```
 
-What Arduino Framework does is really it provides a layer of abstraction over the AVR microcontroller. It's way more developer friendly than dealing with raw registers. Speaking of registers, do you remember the blink example? This is pure AVR code (source: [AVR Blink](./assets/code/chapter_1/2_avr_blink/2_avr_blink.ino)):
+What Arduino Framework does is really it provides a layer of abstraction over the AVR microcontroller. 
+It's way more developer friendly than dealing with raw registers. Speaking of registers, 
+do you remember the blink example? This is pure AVR code (source: [AVR Blink](./assets/code/chapter_1/2_avr_blink/2_avr_blink.ino)):
 
 ```
 #include <avr/io.h>
@@ -182,15 +224,24 @@ int main() {
 }
 ```
 
-It way more complex, lots of bit shifts and poor readability. You certainly can see `setup()` and `loop()` blocks.
+Isn't it way more complex, is it? Lots of bit shifts and poor readability. 
+You certainly can see `setup()` and `loop()` blocks.
 
-To initialize pin mode (remember: `pinMode()` function?), you need to follow documentation *13.2.3 Switching Between Input and Output* [^3] and set DDRB's value to 1, or precisely `0b0000 0001`. The port shall work as the output device allowing to set/unset state. If you want to connect an LED to `D12` (also known as PB4), you can enable direction by assigning `DDRB = (1 << PB4)` or even `DDRB = 0b0001000`. To enable pin, you need to operate on a different register: PORTB. Operation `^=` means toggling a value under the given bit location. In Arduino, you would call `digitalWrite(pin, LOW|HIGH)` twice.
+To initialize pin mode (remember: `pinMode()` function?), you need to follow documentation 
+*13.2.3 Switching Between Input and Output* [^3] and set DDRB's value to 1, or precisely `0b0000 0001`. 
+The port shall work as the output device allowing you to set/unset state. If you want to connect an LED to 
+`D12` (also known as PB4), you can enable direction by assigning `DDRB = (1 << PB4)` or even `DDRB = 0b0001000`. 
+To enable pin, you need to operate on a different register: `PORTB`. Operation `^=` means toggling a 
+value under the given bit location. In Arduino, you would need to call `digitalWrite(pin, LOW|HIGH)` twice.
 
-Clearly, AVR can be much harder to comprehend. So why bother? Well, some day you may be asked to implement a simple firmware on ATtiny13, a microcontroller with very little resources. The AVR example requires 166 bytes, the Arduino one: 924bytes. Any framework shall add additional overhead and consume more flash on your device. You need to be very conscious about resources and the platform limits (i.e., stack depth - nesting functions calls may also lead to errors!).
+Clearly, AVR can be much harder to comprehend. So why bother? Well, some day you may be asked to 
+implement a simple firmware on ATtiny13, a microcontroller with very little resources. 
+The AVR example requires 166 bytes, the Arduino one: 924bytes. Any framework shall add additional 
+overhead and consume more flash disk space on your device. You need to be very conscious about resources 
+and the platform limits (i.e., stack depth - nesting functions calls may also lead to errors!).
+
 
 ## Digital input and pull-up resistors
-
-
 It's time to get some input events from the world. An obvious choice is a push button. 
 A simple device that breaks a circuit if anyone pushes it...
 
@@ -207,7 +258,8 @@ to support a button with a pullup resistor, such as this one:
 
 You are not limited to such a simple design. You can of course connect your button through a 
 transitor, i.e., common collector circuit and/or a capacitor to the circuit to eliminate contact 
-bounce [^7]. Eliminating contact bouncing can be done [programmatically](https://docs.arduino.cc/built-in-examples/digital/Debounce) but it's a rather tedious job to do.
+bounce [^7]. Eliminating contact bouncing can be done 
+[programmatically](https://docs.arduino.cc/built-in-examples/digital/Debounce) but it's a rather tedious job to do.
 
 More on pullup resistors can be found on Sparkfun's learning portal [^8] and debouncing here [^9].
 
@@ -252,7 +304,8 @@ void loop() {
 }
 ```
 
-Interesting code parts: `pinMode(<<pin>>, INPUT_PULLUP|INPUT)`. This is a pullup configuration for `D2 button`. From now on, you can read the state on the `D2` pin!. `digitalRead(<<pin>>)` function reads the state, either `HIGH` or `LOW`.
+Interesting code parts: `pinMode(<<pin>>, INPUT_PULLUP|INPUT)`. This is a pullup configuration for `D2 button`. 
+From now on, you can read the state on the `D2` pin!. `digitalRead(<<pin>>)` function reads the state, either `HIGH` or `LOW`.
 
 Another, *weird* part of the code is the nested if-statement and a delay function. Well, this is 
 software debouncing. You push the button and connectors start to bounce back and forth. The 
@@ -260,7 +313,8 @@ program waits another 50ms until the connectors stabilize. The state should no l
 that pin by the time the program reads the state again. If it is indeed low again, you change the
 state of the button.
 
-Note the last `while` loop at the end of the snippet. It blocks the application until the user releases the button. This is to prevent instant state toggling of the LED. Comment this out and see how your board behaves!
+Note the last `while` loop at the end of the snippet. It blocks the application until the user releases the button.
+This is to prevent instant state toggling of the LED. Comment this out and see how your board behaves!
 
 Now, how can you code the same thing in AVR? Let's see (source: [4_pullup_and_software_debouncing_avr](./assets/code/chapter_1/4_pullup_and_software_debouncing_avr/4_pullup_and_software_debouncing_avr.ino)):
 ```
@@ -292,7 +346,8 @@ int main() {
 }
 ```
 
-There are some major differences between this code and the Arduino one. First of all, the state is kept in registers rather than in an application stack. There is also an additional register 
+There are some major differences between this code and the Arduino one.
+First of all, the state is kept in registers rather than in an application stack. There is also an additional register 
 used: `PIND` (see docs: *13.4.10 PIND* [^3]). The register is responsible for reading the state 
 on Atmega's lead. It returns all 8 bytes, each byte corresponds to one of the pins in your board. 
 To read the state on PD2, you need to run some shifts to get data. Let's decipher this bit, 
@@ -327,17 +382,20 @@ decide to use Arduino library, it's way easier to do so! Of course, it all comes
 
 Good job! You know how to blink your LEDs both programmatically and with a push button. That's 
 quite a lot. Really, interacting with a microcontroller is all about sending and receiving ones 
-and zeros. All subsequent chapters only extend that notion! Can you imagine manually pushing and releasing a button 1000 times a second? This is what you will learn in the PWM chapter. Well, you'll learn how to do it programmatically, at least ;)
+and zeros. All subsequent chapters only extend that notion! Can you imagine manually pushing and 
+releasing a button 1000 times a second? This is what you will learn in the PWM chapter. Well, 
+you'll learn how to do it programmatically, at least ;)
 
-Let's move on to the next topic on interrupts. It's not the best idea to run blocking operations 
+Let's move on to the next topic: interrupts. It's not the best idea to run blocking operations 
 in the main program loop after all.
  
 
 ## Interrupts
 
-Last but not least, we shall take a look at interrupts in this section. What an interrupt? Well,
+Last but not least, we shall take a look at interrupts in this section. What is an interrupt? Well,
 it's a mechanism that allows reacting to external (or internal) events outside of the main 
-program loop? Wait, what? Let's take a look an example, this time it'll be AVR code first (source - [5_interrupts_avr_toggle_led](./assets/code/chapter_1/5_interrupts_avr_toggle_led/5_interrupts_avr_toggle_led.ino)):
+program loop? Wait, what? Let's take a look at an example, this time it'll be AVR code first 
+(source - [5_interrupts_avr_toggle_led](./assets/code/chapter_1/5_interrupts_avr_toggle_led/5_interrupts_avr_toggle_led.ino)):
 
 ```
 #include <avr/io.h>
@@ -371,7 +429,8 @@ int main() {
 ```
 
 If you take a closer look at `while (true)` loop, you see it does nothing but sleeping. A good 
-nap is nice but this is not why you bought your board to simply let it sleep... You want it to work for you and blink an LED!. If you compile it and start pressing the button you see that 
+nap is nice but this is not why you bought your board to simply let it sleep... You want it to work for you 
+and blink an LED!. If you compile it and start pressing the button you see that 
 the LED turns on and off. Why? The interrupt!
 
 There are some lines that can be somehow surprising. First of all `sei()` function. It enables 
@@ -381,10 +440,10 @@ function is the most common reason why my interrupt routines don't work... it's 
 enable them in the first place... There's also a function that has exactly opposite effect: 
 `cli()` - it disables interrupts. It sometimes is handy as well.
 
-Ok, interrupts are enabled. Now, we need to use PB5 pin as interrupt! Atmega328p offers two I/O 
+Ok, interrupts are enabled. Now, we need to use PB5 (push button) pin as interrupt! Atmega328p offers two I/O 
 pins as a source for external interrupts. Not much but still, we need to work with things we 
 have*. If you take a look at Arduino pinout from in the top of this page you'll notice that `PB5`
-has also `INT0` label. That's the interrupt! A smart board design, isn't it?
+has also `INT0` label. That's the interrupt! Smartly design board, isn't it?
 
 \*you can set up interrupts as *PCIEx* that generates interrupts on many pins but it's out of 
 scope of this tutorial
@@ -395,10 +454,12 @@ source (vector) - see documentation *12.2.2 EIMSK – External Interrupt Mask Re
 documentation states you need to set up an activation property to either raising or falling edge. 
 You need the falling edge as you use a pullup-resistor. It means the high potential on the lead. 
 So anytime you press the button, the potential goes to zero, hence the falling edge.
+Of course, you can reverse that logic and use to your advantage. After all, it's all about
+making engineering decisions.
 
 Now, the most important part: `ISR()`. ISR is a special macro that handles interrupts in AVR. An 
 *average* ISR body should be very concise and efficient. No long running operations as you block 
-the main loop. Disabling interrupts and re-enabling them can be also a good idea if your code is 
+the main loop! Disabling interrupts and re-enabling them can be also a good idea if your code is 
 highly asynchronous. You also should store `SREG` value to make sure you don't disable anything 
 by mistake. ISR should then look more like this:
 
@@ -458,7 +519,7 @@ event source pin, here `INT0`. This is certainly more readable and does not requ
 knowledge on your board pinout. `toggleLed` here is simply passing a pointer to `toggleLed` 
 function. You can use a more explicit way to show it's a pointer: `&toggleLed`, although I find 
 it a bit of an overkill. Finally, you need to define a trigger that activates your interrupt. 
-Except FALLING, there options such as `LOW|CHANGE|RISING` [^11]. 
+Choose FALLING trigger and keep in mind that there other options such as `LOW|CHANGE|RISING` [^11]. 
 
 The `enableInterrupt` function works for digital pins only. Implementing a custom `ISR` can be 
 more generic. Atmega328p support 26 input vectors as defined in 
@@ -487,17 +548,18 @@ perform several actions in the same time. Multitasking, my friend :)!
 Digital electronics, as your Atmega328p, is all about zeros and ones. 
 There are no values in between, ideally. Thus, it's a rather hard task to talk about analog 
 values in between 0-5V. Luckily, we are not exactly bound to 2 states only. We can change a pin 
-state fast enough to reduce output power in a given timespan - this is called PWM, Pulse
-Width Modulation. It's a rather important aspect of embedded programming, therefore
+state fast enough to reduce output power in a given timespan - this is called PWM, *Pulse
+Width Modulation*. It's a rather important aspect of embedded programming, therefore
 please read the next chapter that handles PWM in details.
 
 There are also Arduino boards that support DAC - Digital-to-Analog converters, such
 as [Arduino Due](https://store.arduino.cc/products/arduino-due). Unfortunately,
-Atmega 328p, as the one in your board, does not support DAC. For more details,
+Atmega 328p microcontroller, as the one in your board, does not support DAC. For more details,
 take a look at Wiki: [Digital-to-analog converter](https://en.wikipedia.org/wiki/Digital-to-analog_converter).
 
 You can also read analog values with your microcontroller. Atmega328p comes with a 10-bit ADC and 
-comparator built-in! ADC stands for Analog-Digital-Converter, which effectively translates voltage to 10 bit value: 0-1023 integer value. More on ADC in the next chapter!
+comparator built-in! ADC stands for Analog-Digital-Converter, which effectively translates voltage to 
+a 10-bit value: 0-1023 integer value. More on ADC in the next chapter!
 
 # References
 
