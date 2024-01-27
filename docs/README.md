@@ -35,6 +35,7 @@ Your best friend during the course - [Atmega328P Datasheet](https://ww1.microchi
 
 To complete the tutorial, you'll need:
 
+* 1x justPi 830 breadboard (or other with compatible dimension)
 * 1x Cytron Nano board (Arduino Nano board is a good choice too, though provides fewer features)
 * 2x 28BYJ-48 stepper motors with ULN2003 driver (Darlington amp)
 * 1x SG-92R servo (or similar)
