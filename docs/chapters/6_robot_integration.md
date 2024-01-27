@@ -129,19 +129,19 @@ Full assembly instructions:
 ![Rear - wall assembly](./assets/images/chapter_6/01_rear.jpg)
 <br />Figure: Rear axle: Wall assembly
 
-1. Assemble  `rear_wall.stl` with `chassis_rear_beam_with_airsoft_bearing.stl`. Mind the notches.
+1) Assemble  `rear_wall.stl` with `chassis_rear_beam_with_airsoft_bearing.stl`. Mind the notches.
 The support beams in `rear_wall.stl` should point outwards. See the next figures for more details
 
 ![Rear - bearing assembly](./assets/images/chapter_6/02_rear_airsoft_ball.jpg)
 <br />Figure: Rear axle: Bearing assembly
 
-2. Insert a 6mm polymer ball into the notch in `chassis_rear_beam_with_airsoft_bearing.stl` at the
+2) Insert a 6mm polymer ball into the notch in `chassis_rear_beam_with_airsoft_bearing.stl` at the
 bottom
 
 ![Insert rear axle](./assets/images/chapter_6/03_rear_breadboard.jpg)
 <br />Figure: Install rear axle
 
-3. Insert the breadboard into the axle as shown in the picture. This should fit tight. You can use 
+3) Insert the breadboard into the axle as shown in the picture. This should fit tight. You can use 
 a zip tie to tight the side walls: mind the openings in the sides: you can use it to insert the zip
 tie
 
@@ -149,51 +149,51 @@ tie
 ![Motor assembly](./assets/images/chapter_6/04_motor.jpg)
 <br />Figure: Motor assembly
 
-4. Make sure you hold the stepper so the shaft is at the top. Insert the left piece 
+4) Make sure you hold the stepper so the shaft is at the top. Insert the left piece 
 into `stepper_motor_case.stl`. The print is elastic, you can bend it to accommodate for the necessary room. With a counterclockwise movement, insert the right piece of the stepper into the slot. Use some force as its very tight by design so no screw/bolts are needed. Perform this step twice
 
 ![Wheel and stepper](./assets/images/chapter_6/05_motor_and_wheel.jpg)
 <br />Figure: Install wheel
 
-5. Glue a piece of rubber on top of the wheel. A typical window gasket/seal is good enough
-6. Insert the stepper shaft into the slot. It is up to you to pick the wheel facing side
+5) Glue a piece of rubber on top of the wheel. A typical window gasket/seal is good enough
+6) Insert the stepper shaft into the slot. It is up to you to pick the wheel facing side
 
 
 ![Front axle](./assets/images/chapter_6/06_front_axle.jpg)
 <br /> Figure: Front axle assembly
 
-7. Push each wheel onto `chassis_front_beam.stl`
-8. Thread the stepper leads through the bottom opening
-9. Install `front_wall.stl` with the support beams facing front. Mind the cables. You should
+7) Push each wheel onto `chassis_front_beam.stl`
+8) Thread the stepper leads through the bottom opening
+9) Install `front_wall.stl` with the support beams facing front. Mind the cables. You should
 achieve the overall result as shown in the Figure
 
 ![Install Servo](./assets/images/chapter_6/07_servo_into_driver_tower.jpg)
 <br />Figure: Install Servo
 
-10. Insert the servo into `servo_holder.stl`. There are two opening for the cabling. Make
+10) Insert the servo into `servo_holder.stl`. There are two opening for the cabling. Make
 sure you lay the cables through the openings
-11. Insert the combined element into the middle drawer of `driver_tower_with_servo.stl`
-12. Assemble the arm by gently installing `servo_arm_effector.stl` onto `servo_arm.stl`
-13. Insert an asymmetric handle/needle/rudder into the assembled arm (no photos). The handle
+11) Insert the combined element into the middle drawer of `driver_tower_with_servo.stl`
+12) Assemble the arm by gently installing `servo_arm_effector.stl` onto `servo_arm.stl`
+13) Insert an asymmetric handle/needle/rudder into the assembled arm (no photos). The handle
 comes with the servo in the same package
-14. Push the assembled arm onto servo shaft. Do it gently as you need to calibrate the servo later.
+14) Push the assembled arm onto servo shaft. Do it gently as you need to calibrate the servo later.
 
 ![Front axle and driver tower](./assets/images/chapter_6/08_driver_tower_and_front_axle.jpg)
 <br />Figure: Install front axle and the driver tower
 
-15. Install the driver tower, so the small openings face forward
-16. Install the front axle
-17. Thread the stepper leads through the top and bottom notches. You should achieve the result 
+15) Install the driver tower, so the small openings face forward
+16) Install the front axle
+17) Thread the stepper leads through the top and bottom notches. You should achieve the result 
 as shown in the picture
 
 ![Wiring](./assets/images/chapter_6/09_wiring.jpg)
 <br />Figure: Wiring
 
-18. Connect all leads as suggested in the pinout table
-19. Lay the cables in a way they have very low chances to interfere with the arm. Use zip ties,
+18) Connect all leads as suggested in the pinout table
+19) Lay the cables in a way they have very low chances to interfere with the arm. Use zip ties,
 thread, tape to order the cabling
 
-20. We're done here. Move to the coding part :)!
+20) We're done here. Move to the coding part :)!
 
 ## Coding
 
