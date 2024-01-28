@@ -86,7 +86,11 @@ details to recreate a solution described in such a specification... I haven't ev
 drawings yet! Testing, maybe? Operational scenarios (a set of typical procedures to follow) and 
 alternative scenarios ([FUBAR](https://en.wikipedia.org/wiki/List_of_military_slang_terms#FUBAR) cases).
 
-> INSERT a CAD shot
+![Robot - isometric view front](./assets/images/global/robot_cad_design_front_isometric_perspective.jpg)
+<br />Figure: Robot, diagonal front isometric view
+
+![Robot - isometric view rear](./assets/images/global/robot_cad_design_rear_isometric_perspective.jpg)
+<br />Figure: Robot, diagonal rear isometric view
 
 Anyway, you should have now a general feeling over how the robot is going to look like: 2-wheels 
 controlled with stepper motors and an arm that hits opponent robots from top.

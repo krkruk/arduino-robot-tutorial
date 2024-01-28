@@ -1,0 +1,42 @@
+Translacja STEP do Solid Edge
+Data: niedziela,styczeñ 28,2024 08:45PM
+Plik Ÿród³owy: D:\3d\arduino-robot-tutorial\SG90_v7.step
+Autor: Unknown
+Organizacja: Unknown
+System Ÿród³owy: Autodesk Translation Framework v8.2.0.1029
+
+Sprzêt:
+Procesor: AMD Ryzen 7 3700X 8-Core Processor             
+System operacyjny: Windows 11 Professional Version:23H2 Build:22631 System Type:64-bit
+Zainstalowana pamiêæ: 31.93 GB
+
+Informacje o oprogramowaniu
+Wersja Parasolid: 36.0.142
+Wersja PSBodyShop: 36.0.108
+Wersja adaptera Step: 13.0.163
+Wersja Solid Edge: 224.00.00.101 x64
+
+Opcje importu STEP
+Importuj bry³y uproszczone: W³¹cz
+Importuj bry³y kontrolne: Wy³¹cz
+Importuj krzywe: W³¹cz
+Importuj bez zapisu: W³¹cz
+Importuj wiele obiektów jako pojedynczy plik czêœci: W³¹cz
+Optymalizacja importu:Wy³¹cz
+Importuj powierzchnie zszywane: W³¹cz
+Importuj obiekty bry³owe operacji Boole'a: W³¹cz
+Utwórz element podstawowy: W³¹cz
+Upraszczaj geometriê: W³¹cz
+Importuj krzywe odciœniête: W³¹cz
+Importuj napêd: C:
+Importuj powierzchnie zszywane: W³¹cz
+Importuj powierzchnie: W³¹cz
+Importuj œcie¿kê wyjœciow¹: D:\3d\arduino-robot-tutorial
+Importuj domyœln¹ œcie¿kê wyjœciow¹: W³¹cz
+Importuj PMI: Wy³¹cz
+Importuj jako komponenty wewnêtrzne: Wy³¹cz
+Œcie¿ka importu: 
+
+Translacja do typów danych Parasolid...
+Proces translacji zosta³ zakoñczony
+Ca³kowity czas wymagany do translacji i dalszego przetwarzania:00 : 00 : 01

@@ -5,8 +5,8 @@ The following pages introduce you into a world of embedded programming in AVR-ba
 
 This repository is organized into the following directories:
 
-* [Tutorial](https://krkruk.github.io/arduino-robot-tutorial/) or [`docs`](docs/README.md) if you prefer to read raw Markdown files. The core tutorial you need.
-* `mini-robot` - this directory contains all intermediate code samples as well as the final code that can be simply uploaded to your Arduino microcontroller given you follow all the suggestions presented in the tutorial
+* [Tutorial - rendered page](https://krkruk.github.io/arduino-robot-tutorial/) or [`docs`](docs/README.md) if you prefer to read raw Markdown files. The core tutorial you need.
+* `/docs/chapters/assets/code` and `mini-robot` - these directories contains all intermediate code samples as well as the final code that can be simply uploaded to your Arduino microcontroller given you follow all the suggestions presented in the tutorial
 * `3d_models` - all necessary STL files (including Solid Edge Community editable versions) to print your own robot!
 
 The tutorial assumes you are at least familiar with C-lang-like language. It is not meant
@@ -14,7 +14,7 @@ to teach anyone how to code in AVR/Arduino from scratch. It's more like a gettin
 for anyone who has some experience at coding.
 
 Remember, education is important. Consider signing up for a university course. I'm just
-a random guy in the Internet ;). Don't trust in anything you read... The tutorial likely has some issues with it, sometimes it may be misleading etc. Common sense is your friend, Google (or any search engine) is your bestie, an AI... will replace you, or not.
+a random guy in the Internet ;). Don't trust in anything you read... The tutorial likely has some issues with it, sometimes it may be misleading etc. Common sense is your friend, Google (or any search engine) is your bestie.
 
 ## Disclaimer
 

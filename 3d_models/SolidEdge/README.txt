@@ -1,0 +1,1 @@
+SG_90_v7.step file downloaded from https://www.thingiverse.com/thing:3730382/files and licensed on CC BY-NC 4.0 DEED

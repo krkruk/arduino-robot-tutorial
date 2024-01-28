@@ -1,1 +1,0 @@
-28BYJ-48 by StudioPieters on Thingiverse: https://www.thingiverse.com/thing:4714670

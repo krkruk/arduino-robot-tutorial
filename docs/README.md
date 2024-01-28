@@ -7,6 +7,9 @@ Well, we no longer live in *Stone Age* and there is no need to chisel transistor
 
 This tutorial presents an affordable way to your very first robotics. For ~€20-25 you can build your own robot that actually can fight! 
 
+![Robot - picture](./chapters/assets/images/global/robot_final_build.jpg)
+<br />Figure: Completed robot, photo
+
 > [!IMPORTANT]
 > This tutorial assumes you have basic familiarity with one of C-like languages: C, C++, Java, JavaScript, Python.
 
@@ -45,8 +48,14 @@ To complete the tutorial, you'll need:
 * 1x photoresistor 
 * 1x microUSB cable
 * 1x push button (optionally)
+* 1x set of 3D printed elements (see below)
 
-## 3D printing
+
+> [!NOTE]
+> If you just want to learn basics you can complete the introductory chapters with only
+> one stepper motor. You also don't need to 3d-print anything in that case!
+
+## Bill of Materials: 3D printed elements
 To complete the tutorial and build a robot, you'll need:
 
 * 1x chassis_front_beam.stl 
@@ -76,6 +85,15 @@ Printing instruction:
 * 6-10% fill
 * 2 line wall thickness
 
+Once you print all the parts, you'll have a robot that resembles the render photos below:
+
+![Front render](./chapters/assets/images/global/front_render.png)
+<br />Figure: Front render
+
+![Rear render](./chapters/assets/images/global/rear_render.png)
+<br />Figure: Rear render
+
+
 ## Integrated development environment
 
 You need to install an integrated development environment to start developing your programs ASAP. It's the easiest and fastest way (of course you can use a standalone AVR Toolchain[^1] and AVRDude [^2]... it's your choice but make sure you have plenty of time and tenacity).
@@ -97,7 +115,7 @@ Now, sometimes it's easier to compile software in Arduino IDE than in VSCode. Yo
 If you are impatient and want the robot now without following the tutorial,
 here are all the steps you need to create your robot.
 
-* 3d-print all elements you find in [`3d_models``](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models) directory. Use \*.stl files
+* 3d-print all elements you find in [`3d_models`](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models) directory. Use \*.stl files
   in your favorite slicer software
 * Follow the pinout as shown in the table
 * Install the software on your Cytron board. Use README file distributed alongside
@@ -117,6 +135,16 @@ here are all the steps you need to create your robot.
 | Left Stepper IN3  | PIN_A2      |
 | Left Stepper IN4  | PIN_A1      |
 
+
+## Disclaimer
+
+All presented materials serve educational purposes only. Working with electricity
+poses hazard to your health and life. If you decide to follow the tutorial,
+you do it at your own risk. You can get destroy your electronic components (i.e., ESD - electrostatic discharge), get electrocuted, burn down your surroundings. You have been warned!
+
+Similarly, 3D printing comes with it's own risks. My first cheap 3D printer caught fire twice...
+You need some basic skills to operate FDM/FFF printer. Please refer to your printer user
+manual. Remember, you do it at your risk!
 
 ### References
 

@@ -62,7 +62,7 @@ precise timing to control servos. The library can control up to 60 servos, depen
 
 There is an official Arduino Servo tutorial if you need a different perspective on basics[^6].
 
-Let's take a look at an example (source: [Arduino Servo library: Hello World!](./assets/code/chatper_5/01_servo_hello_world/01_servo_hello_world.ino)):
+Let's take a look at an example (source: [Arduino Servo library: Hello World!](./assets/code/chapter_5/01_servo_hello_world/01_servo_hello_world.ino)):
 
 ```
 #include <Servo.h>
@@ -101,7 +101,7 @@ The servo moves but its manual mentions 0-180 degree range. My servo certainly d
 a servo and defining a pulse width for PWM signal. Remember? 5%-10% duty cycle. Let's involve some
 trial and error then...
 
-Let's take a look at another example (source: [Arduino Servo Calibration](./assets/code/chatper_5/02_servo_calibration_json/02_servo_calibration_json.ino)):
+Let's take a look at another example (source: [Arduino Servo Calibration](./assets/code/chapter_5/02_servo_calibration_json/02_servo_calibration_json.ino)):
 
 ```
 #include <Servo.h>
@@ -208,7 +208,7 @@ projects as it lowers an entry threshold to get started with. With more advanced
 you will know when to make the right decisions to balance costs vs complexity vs timing requirements 
 (vs other parameters). This is engineering :). Simply, delivering good tradeoffs.
 
-Ok. That's enough of coaching. Let's take a look at the code (source: [Servo - 16bit timer, Hello World](./assets/code/chatper_5/03_servo_16bit_timer_hello_world/03_servo_16bit_timer_hello_world.ino):
+Ok. That's enough of coaching. Let's take a look at the code (source: [Servo - 16bit timer, Hello World](./assets/code/chapter_5/03_servo_16bit_timer_hello_world/03_servo_16bit_timer_hello_world.ino):
 
 ```
 class Servo {
