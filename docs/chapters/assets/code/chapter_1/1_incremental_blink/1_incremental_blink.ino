@@ -1,6 +1,6 @@
-static constexpr uint8_t HARDWARE_LED = 8;
-static constexpr uint8_t DELAY_RATE = 100;
-static constexpr uint16_t MAX_DELAY = 3000;
+static constexpr const uint8_t HARDWARE_LED = 8;
+static constexpr const uint8_t DELAY_RATE = 100;
+static constexpr const uint16_t MAX_DELAY = 3000;
 
 static uint8_t hardwareLedState = HIGH;
 static uint8_t hardwareLedDelayCounter = 1;

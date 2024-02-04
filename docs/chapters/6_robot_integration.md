@@ -12,13 +12,14 @@ to achieve it. Still, this is not a purpose of this exercise. Let's think a bigg
 
 Normally, someone creates an item, a tangible object to fulfil a need. It can be a minor thing but
 still its goal is to satisfy the need. Well? Why do we need to build a robot? 
-It's fun, for sure. You also want to familiarize yourself with basics of microcontrollers and coding. You did it in previous 
-chapters. You are quite proficient at it! This chapter really integrates the knowledge. IMO, Building
+It's fun, for sure. You also want to familiarize yourself with basics of microcontrollers and coding.
+You did it in previous chapters. You are quite proficient at it! 
+This chapter really integrates the knowledge. IMO, Building
 a robot is the coolest way to do it. What sort of goals can we achieve with the robot? Are there any
 alternatives? What's the context, etc.?
 
 An engineer must ask a lot of questions to really understand the problem. After all, we try to solve
-human problems rather than build cool stuff. (I know, here we intend to build cool stuff. 
+human problems rather than build cool stuff. (I know, here we intend to build cool stuff too. 
 I generalize)
 
 So what's our main mission? Say, you can bid a DARPA contract to win a robotic office battle. The
@@ -26,7 +27,7 @@ bid comes with a set of requirements you are expected to meet. Also the budget i
 is willing to pay no more than €30 for a single robot. Specification can look like this:
 * **DARPA/GENERAL/OFFICE-BATTLE/REQ/0010**: A device is a mobile platform, dimensions no greater than 20x20x10cm (length x width x height)
 * **DARPA/GENERAL/OFFICE-BATTLE/REQ/0020**: The device shall be controlled over wire
-* **DARPA/GENERAL/OFFICE-BATTLE/REQ/0030**: The device shall use commonly available off-the-shelf price
+* **DARPA/GENERAL/OFFICE-BATTLE/REQ/0030**: The device shall use commonly available off-the-shelf components
 * **DARPA/GENERAL/OFFICE-BATTLE/REQ/0040**: The device shall compete non-destructively with other competitors to score points
 * **DARPA/GENERAL/OFFICE-BATTLE/REQ/0050**: The device should not be equipped in any agent-dispersing equipment
     * (Consider this requirement as no flamethrowers, no chemical weapons, no shooting)
@@ -36,16 +37,20 @@ The specification can of course be presented in different forms, formatting and 
 blocks of text...). Eventually, it's up to you to identify all possible requirements and assumptions 
 to meet your client's needs. You can learn a bit more about it by reviewing some university competitions such as [Rules - European Rover Challenge](https://drive.google.com/file/d/1jZyn9oY7vqMJMvXQyE6EeLh7gRC0LpJh/view?usp=drive_link) or [Rules - University Rover Challenge](https://urc.marssociety.org/home/requirements-guidelines)
 
-Note the language. Verbs such as is/shall/should/may/can/etc., one precise item mentioned in each bullet. The language of such requirements in the specification tries to be very detailed. In reality, even the
-most detailed description tends to be barely a draft once you attempt to implement it. There are
-simply too many factors to predict. Still, I wish you always get all the specs with no ambiguity.
+Note the language. Verbs such as is/shall/should/may/can/etc., one precise item mentioned in each 
+bullet. The language of such requirements in the specification tries to be very detailed. 
+In reality, even the most detailed description tends to be barely a draft once you attempt 
+to implement it. There are simply too many factors to predict. 
+Still, I wish you always get all the specs with no ambiguity.
 Note the enumeration too. It's not always the case but usually it helps to navigate in documents
 if you provide a decent convention. Imagine you need to talk to your client and discuss 
 an unclear requirement. You can say that: on the 3rd page, 8th paragraph, second sentence the
 requirement states that... and so on. Lots of words, too many actually. The enumeration helps
 tracking this sort of problems in formal procurements as well as in future discussions.
 
-The bid comes with a specification that defines a series of requirements. Now you need to model your further activities. What sort of actions the device, or from now on a robot, shall take? What
+The bid comes with a specification that defines a series of requirements. 
+Now you need to model your further activities. What sort of actions the device, 
+or from now on a robot, shall take? What
 are the *rules of engagement*? Should the robot fight automatically? How to strike an opponent
 within the given rules? How you can flex those rules, so it gives you market advantage :)?
 There is lots of thinking involved... What are your skills (although it's not as important as it
@@ -68,7 +73,8 @@ emitting a sound signal
 
 These requirements shall convert into the following assumptions:
 * **RB-GENERAL-IMPL/0010/REF:RB-GENERAL-REQ/0010**: The robot shall utilize 28BYJ-48 stepper motors to drive
-* **RB-GENERAL-IMPL/0020/REF:RB-GENERAL-REQ/0010**: The robot shall be equipped with wheel 7-7.5cm in diameter, 3D-printed in PLA, rubberized tread
+* **RB-GENERAL-IMPL/0020/REF:RB-GENERAL-REQ/0010**: The robot shall be equipped with a set of wheels
+ 7-7.5cm in diameter, 3D-printed in PLA, rubberized tread
 * **RB-GENERAL-IMPL/0030/REF:RB-GENERAL-REQ/0020**: The drive model shall be implemented within microcontroller
 * **RB-GENERAL-IMPL/0031/REF:RB-GENERAL-REQ/0020**: The drive model shall comprise 4 commands: FORWARD, BACKWARD, TURN_LEFT, TURN_RIGHT. Turning shall be performed in-place. Power setting of min.0-max.255 shall be issued along with the drive command.
 * **RB-GENERAL-IMPL/0040/REF:RB-GENERAL-REQ/0030**: The robot shall use microUSB cable and be supplied
@@ -146,9 +152,8 @@ bottom
 <br />Figure: Install rear axle
 
 3) Insert the breadboard into the axle as shown in the picture. This should fit tight. You can use 
-a zip tie to tight the side walls: mind the openings in the sides: you can use it to insert the zip
+a zip tie to tight the side walls: mind the openings in the sides: you can use it to insert a zip
 tie
-
 
 ![Motor assembly](./assets/images/chapter_6/04_motor.jpg)
 <br />Figure: Motor assembly
@@ -160,6 +165,7 @@ into `stepper_motor_case.stl`. The print is elastic, you can bend it to accommod
 <br />Figure: Install wheel
 
 5) Glue a piece of rubber on top of the wheel. A typical window gasket/seal is good enough
+
 6) Insert the stepper shaft into the slot. It is up to you to pick the wheel facing side
 
 
@@ -167,7 +173,9 @@ into `stepper_motor_case.stl`. The print is elastic, you can bend it to accommod
 <br /> Figure: Front axle assembly
 
 7) Push each wheel onto `chassis_front_beam.stl`
+
 8) Thread the stepper leads through the bottom opening
+
 9) Install `front_wall.stl` with the support beams facing front. Mind the cables. You should
 achieve the overall result as shown in the Figure
 
@@ -176,17 +184,24 @@ achieve the overall result as shown in the Figure
 
 10) Insert the servo into `servo_holder.stl`. There are two opening for the cabling. Make
 sure you lay the cables through the openings
+
 11) Insert the combined element into the middle drawer of `driver_tower_with_servo.stl`
+
 12) Assemble the arm by gently installing `servo_arm_effector.stl` onto `servo_arm.stl`
+
 13) Insert an asymmetric handle/needle/rudder into the assembled arm (no photos). The handle
 comes with the servo in the same package
+
 14) Push the assembled arm onto servo shaft. Do it gently as you need to calibrate the servo later.
+
 
 ![Front axle and driver tower](./assets/images/chapter_6/08_driver_tower_and_front_axle.jpg)
 <br />Figure: Install front axle and the driver tower
 
 15) Install the driver tower, so the small openings face forward
+
 16) Install the front axle
+
 17) Thread the stepper leads through the top and bottom notches. You should achieve the result 
 as shown in the picture
 
@@ -194,6 +209,7 @@ as shown in the picture
 <br />Figure: Wiring
 
 18) Connect all leads as suggested in the pinout table
+
 19) Lay the cables in a way they have very low chances to interfere with the arm. Use zip ties,
 thread, tape to order the cabling
 
@@ -224,7 +240,7 @@ a stationary position
 Additionally, I want to add STOP command:
 * STOP (mnemonic: `STOP`): wheels no longer spin, power cut-off, servo returns to its default position
 
-Each mnemonic shall accept values in between: `0..255`. `STOP` mnemonic shall ignore the value but still, make sure to send zero, for clarity.
+Each mnemonic shall accept values in between: `0..255`. `STOP` mnemonic shall ignore the value but still, make sure to send zero, for API consistency.
 
 You or a control app shall send only one of these mnemonics at the time.
 Sample JSON:
@@ -249,7 +265,7 @@ Sample JSON:
 Servo definition can look like this:
 * HIT (mnemonic `HIT`) - the servo performs a rapid strike and returns to its default position,
 the code ignores any numerical value
-* SERVO_POSITION (mnemonic: `SPOS`) - sets the servo into a position between 0..180 degrees.
+* SERVO_POSITION (mnemonic: `SPOS`) - sets the servo into a position between 0..180 degrees. Allowed values: 0..180
 * STOP (mnemonic: `STOP`) - places the servo to its neutral position
 
 Similarly as in the drive case, you send either one of these two mnemonics:
@@ -287,10 +303,11 @@ As the **RB-COMBAT-REQ/0020** assumption suggests, the arm should hit from top t
 interpreted as keeping the arm in a vertical position. The hit would be *fast* move to a 
 horizontal position. We can even overshoot a bit for the best *shock and awe* effect :D!.
 
-Once you calibrate the servo you should now the 0deg and 180deg positions. You can now adjust
-the arm location at either of these positions and consider it as your default state. So say, the arm is vertical (or slightly tilted towards the hitting direction). Then, by applying 0deg or 180 deg
-position, the servo performs a hit. It's a question of how you inserted the servo into
-the driver tower box. 
+Once you calibrate the servo, you should know the 0deg and 180deg positions. You can now adjust
+the arm location at either of these positions and consider it as your default state. 
+So say, the arm is vertical (or slightly tilted towards the hitting direction). 
+Then, by applying 0deg or 180 deg position, the servo performs a hit. 
+It's a question of how you inserted the servo into the driver tower box. 
 
 This sample allows controlling servo in range 0..180degrees, as suggested by the JSON contract:
 
@@ -448,7 +465,7 @@ To make stepper work, I'm going to use *AccelStepper* library[^3]. Integration i
 straightforward. You just repeat steps found in *Stepper chapter* twice, for each servo.
 Just be careful! The robot will try to run away!
 
-The code (source: [Stepper Integration](./assets/code/chapter_6/02_stepper_integration/02_stepper_integration.ino)) implements 5 states in which a robot chassis can operate, See
+The code (source: [Stepper Integration](./assets/code/chapter_6/02_stepper_integration/02_stepper_integration.ino)) implements 5 states in which a robot chassis can operate. See
 the JSON contract proposed above. Code:
 
 ```
@@ -526,10 +543,10 @@ void loop() {
 Private `mapSpeed()` function has been introduced to keep mapping logic in one place. If you recall
 the assumptions, the allowed speed value is between 0..255, hence the mapping. Note also how 
 `turnLeft()` and `turnRight()` functions are implemented. This is [differential drive](https://en.wikipedia.org/wiki/Differential_wheeled_robot) in which robot turns wheels in opposite
-directions to cause rotation. This also explains why we need a BB ball as bearing too :).
+directions to cause rotation. This also explains why we need a BB ball as a bearing too :).
 
 The code is straightforward and no further analysis is required. Please, refer to 
-*Stepper motor* chapter if something here is unclear.
+*Stepper motor* chapter if there is unclear.
 
 ### JSON Contract integration
 
@@ -620,8 +637,6 @@ void applyServoCommand(tuple<SledgehammerCommands::SledgehammerCmdEnum, uint8_t>
 void setup() {
   Serial.begin(115200);
   while (!Serial);
-
-
 }
 
 void loop() {
@@ -664,7 +679,8 @@ Alright, it's time to combine everything together. The JSON integration part is 
 the project. Simply copy and paste stepper and servo integration steps. We'll need to implement
 two functions `applyChassisCommand()` and `applyServoCommand()`.
 
-Let's see how these functions can look like (full source code: [Full integration](./assets/code/chapter_6/04_integrated_code/04_integrated_code.ino)):
+Let's see how these functions can look like (full source code: 
+[Full integration](./assets/code/chapter_6/04_integrated_code/04_integrated_code.ino)):
 
 ```
 // [...]
@@ -736,9 +752,13 @@ Hope you noticed two huge switches! This is one way to control commands in a mic
 Switch is simple and easy to read. Another way is to create an array or a map of function
 pointers. That would somehow easier to read but way more complicated from the language perspective.
 AVR toolchains does not come with `std::function` to at least minimally simplify the implementation.
-Hence, the switches.
+Hence, the switches. You can also use 
+[*Command pattern*](https://refactoring.guru/design-patterns/command) too if you are familiar 
+with OOP. Likely, you would implement it with some help of 
+[CRTP C++ pattern](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) 
+to avoid polymorphic calls.
 
-Not much to talk about really. Just read it carefully, you'll understand it perfectly. Some remarks, 
+There is not much to talk about the code, really. Just read it carefully, you'll understand it perfectly. Some remarks, 
 though:
 * `static` JsonDocument, Chassis and WeaponizedServo - static here means to keep these
 variables in a single compilation unit (think: file). If you decide to use it in different files, the 
@@ -761,7 +781,7 @@ Global variables use 579 bytes (28%) of dynamic memory, leaving 1469 bytes for l
 ```
 
 Remember previous chapters? Direct hardware access can heavily optimize resource usage. On the
-other hand, it wouldn't be so easy to implement as shown above.
+other hand, it wouldn't be so easy to implement as the samples shown above.
 
 ### Serial Monitor tests
 
@@ -811,7 +831,10 @@ void setup() {
 }
 ```
 
-It works much better now! You can also play with `if (Serial.available()) > 0` line. Say, the shortest
+It works much better now! As the new timeout is 20ms, likely the overall time you need to strike an 
+opponent is roughly 360ms. Unnoticeable difference in our use case.
+
+You can also play with `if (Serial.available()) > 0` line. Say, the shortest
 command is `{"HIT":0}` is 9 characters.  Your patch may look like this: `if (Serial.available()) > 8`. It also works reasonably well. You can choose also some harder ways to fix it. It's up to you :)!
 
 Alright, the robot can hit opponents but how does it ride? Let's test it! Make sure your robot
@@ -839,6 +862,9 @@ Everything seems to work, that's great news! Now, the final test, combine both d
 
 This feature seems to work too!!!
 
+The final code (fully integrated), can be found here: 
+[Fully integrated robot firmware](./assets/code/chapter_6/05_integrated_code_fixed_issues/05_integrated_code_fixed_issues.ino)
+
 ## Conclusions
 
 Fantastic job! You built and coded your own robot!!! That's a huge achievement!
@@ -850,8 +876,8 @@ If you think about the next step, I strongly suggest playing with different plat
 especially Raspberry Pico and STM32. These are way more powerful controllers with decent
 community support.
 
-That's all! You are on your own in this amazing journey of the embedded world! Good luck, have fun, try not hurt yourself in the process!
-
+That's all! You are on your own in this amazing journey of the embedded world! 
+Good luck, have fun, nd try not hurt yourself (or others) in the process!
 
 
 # References

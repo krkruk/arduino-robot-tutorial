@@ -1,4 +1,4 @@
-static constexpr uint8_t PUSH_BUTTON = 2;
+static constexpr const uint8_t PUSH_BUTTON = 2;
 static uint8_t builtinLedState = LOW;
 
 void setup() {

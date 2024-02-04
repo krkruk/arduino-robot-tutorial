@@ -12,7 +12,8 @@ Serial port, [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receive
 [Universal Asynchronous Receiver-Transmitter](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
 is a way that allows you to connect easily your device with PC and exchange data.
 
-Asynchronous means that receiver/transmitter does not have to run at the same pace. Clocks of both devices can run at different frequencies or be out of phase. UART uses start and stop bits to 
+Asynchronous means that receiver/transmitter does not have to run at the same pace. Clocks of both 
+devices can run at different frequencies or be out of phase. UART uses start and stop bits to 
 determine when the transmission is over. This gives a great advantage. The protocol can work with no 
 difficult clock synchronization techniques and technologies. 
 Therefore, UART can be used at longer distances, speaking more of meters (yards) rather than 
@@ -99,8 +100,8 @@ Of course, you can implement something custom too - see the note below.
 You can use text format too! It has several advantages: 1) it's human readable, 2) easy to find the 
 last character, usually a new line character `\n`. Text format narrows down a range of values we send 
 in a single byte from the binary data perspective. [ASCII](https://pl.wikipedia.org/wiki/ASCII) 
-encodes human readable numbers as characters starting from a value 32 (in decimal, space ` `) up until 
-126 (dec, `~` character). Numbers between 0-31 and 127 
+encodes human readable numbers as characters starting from a value 32 (in decimal, space `<<space>>`) 
+up until 126 (dec, `~` character). Numbers between 0-31 and 127 
 are special characters, such as *new line* character `\n` 10 (decimal). Thanks to this trick, a 
 microcontroller can listen to a sender and cache raw bytes incoming from another UART device until it 
 receives a byte of value 10 (dec, a new line character). You received a full line, a message that can be processed!
@@ -180,7 +181,7 @@ ArduinoJson will be used by default in subsequent chapters. Make sure to install
 
 ## Arduino Framework
 
-Arduino allows you using serial communication with ease. Make sure you familiarize yourself with documentation[^5].
+Arduino allows using serial communication with ease. Make sure you familiarize yourself with documentation[^5].
 
 ### Serial initialization
 
@@ -231,7 +232,7 @@ register calls. That's correct! Let's now just focus on the positives: it takes 
 `Serial.begin(<<baudrate>>[, <<config, default: SERIAL_8N1>>])`[^6] initializes serial port to 
 a given baudrate. Optionally, you can specify additional config for serial, should you need it. 
 Otherwise, just enjoy simplicity of the API. Note that `Serial` is effectively a global variable 
-that represents hardware serial. If you own an Arduino Mega, Due or any other that happend to support 
+that represents hardware serial. If you own an Arduino Mega, Due or any other that happened to support 
 multiple UARTs, you can use other ports as well: `Serial1`, `Serial2`. You just need to make sure you 
 connect necessary cables accordingly.
 
@@ -344,7 +345,8 @@ C++ libraries that come with AVR toolchain. `sprintf(<<buffer>>, <<format>>, <<a
 * `args[]` - a list of values meant to substitute the placeholders found in `format`. Note that, AVR 
 `sprintf` function DOES NOT support `float`/`double` data type!
 
-Then, you simply write the buffer as your result with `Serial.println()` function. Effectively, all you need to do is to provide a buffer and come up with a `format` string. Pretty standard C!
+Then, you simply write the buffer as your result with `Serial.println()` function. Effectively, all 
+you need to do is to provide a buffer and come up with a `format` string. Pretty standard C!
 
 
 #### Write JSON
@@ -392,14 +394,19 @@ Clearly, the data generation code is similar to the one presented in the previou
 `value` can be of `float` type! For use of `random()` function, please refer to the previous section
 and Arduino documentation.
 
-`JsonDocument` is the main library that help you serialize data into JSON object. Note, the library automatically detect variable type and uses corresponding serialization techniques. From your
+`JsonDocument` is the main library that help you serialize data into JSON object. Note, the library 
+automatically detect variable type and uses corresponding serialization techniques. From your
 perspective, it provides great comfort and ease of use!
 
 Internally, `JsonDocument` uses dynamic allocators that can be somehow tricky to use. Generally, 
-MISRA[^11] does not support any dynamic allocations in embedded programming. ArduinoJson in version 
+MISRA[^11] does not support dynamic heap allocations (`new/delete`, `malloc()/free`, etc.) 
+in embedded programming. ArduinoJson in version 
 *6.\** allows to statically allocate memory for that matter. In version *7.\**, you need to implement 
-a custom allocator (github code: [ArduinoJson: Allocator](https://github.com/bblanchon/ArduinoJson/blob/7.x/src/ArduinoJson/Memory/Allocator.hpp)). You often want your code as deterministic as possible.
-This is to guarantee SLAs in certain use cases, i.e., aircrafts.
+a custom allocator (github code: 
+[ArduinoJson: Allocator](https://github.com/bblanchon/ArduinoJson/blob/7.x/src/ArduinoJson/Memory/Allocator.hpp)). 
+You often want your code to be as deterministic as possible. This is to guarantee SLAs in certain 
+use cases, i.e., aircrafts. This is one of the reasons why dynamic heap allocation can become 
+a problem in huge apps.
 
 Finally, all you need to do is to write a JSON object into Serial. You do it by calling 
 `serializeJson(<<doc>>, <<Serial>>)`. Note, the API does not write it as a line, 
@@ -474,7 +481,7 @@ line delimiter. Still, it does not play a huge role in this example but it can b
 in your future project. Be aware of it!
 
 By now, the application has all data it needs to run business logic! It turns on and off an LED
-depending on a PIN number you enter! It also sends a feedback back to Serial Monitor! Isn't it great!
+depending on a pin number you enter! It also sends a feedback back to Serial Monitor! Isn't it great!
 Finally, your first useful app. Now imagine these LEDs are light bulbs, a kettle, a coffee machine and
 so on. You can control them all with some basic knowledge on power electronics (i.e, how to use 
 relays).

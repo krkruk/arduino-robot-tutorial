@@ -2,7 +2,8 @@
 
 ## Introduction
 
-Have you ever dreamed of making your own device? Do you think it's a difficult thing and requires at least a PhD in electronics?
+Have you ever dreamed of making your own electronic device? 
+Do you think it's a difficult task and requires at least a PhD in electronics?
 Well, we no longer live in *Stone Age* and there is no need to chisel transistors out of a silicon wafer. There are way better solutions on the market nowadays.
 
 This tutorial presents an affordable way to your very first robotics. For ~€20-25 you can build your own robot that actually can fight! 
@@ -71,10 +72,16 @@ To complete the tutorial and build a robot, you'll need:
 
 Additionally:
 * 1x plastic 6mm airsoft BB
-* rubber strips to form a tyre (adhesive required). I used a window gasket/seal for this purpose
-
-That's your bearing and a part of the rear axle. Some basic tools, glue 
-and an electrical tape, and a few zip ties can be quite handy too.
+  * That's your bearing and a part of the rear axle
+* rubber strips to form a tyre (adhesive required). I used a window gasket/seal for this purpose. 
+You can also cut a piece of a bicycle inner tube (so called *ranger band*). It fits perfectly and does
+not require adhesives.
+* Glue
+* Some basic tools
+* electrical tape
+* a few zip ties can be quite handy too. Alternatively, you can use ancient technique of 
+[cable lacing](https://en.wikipedia.org/wiki/Cable_lacing). After all, it's a formal NASA [NASA-STD-8739.4](https://s3vi.ndc.nasa.gov/ssri-kb/static/resources/nasa-std-8739.4a.pdf) standard.
+Take a look at [NASA's website](https://workmanship.nasa.gov/lib/insp/2%20books/links/sections/401%20General%20Requirements.html).
 
 All STL files can be downloaded from this tutorial repository: [3d_models](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models). 
 
@@ -100,14 +107,23 @@ You need to install an integrated development environment to start developing yo
 
 Since it's a quick way to get you started I suggest you install both, yes both, environments:
 
-* VSCode/VSCodium + PlatformIO plugin. This is how you can do it: [Installation tutorial](https://docs.platformio.org/en/latest/integration/ide/vscode.html#ide-vscode)
+* VSCode/VSCodium + PlatformIO plugin. This is how you can do it: 
+[Installation tutorial](https://docs.platformio.org/en/latest/integration/ide/vscode.html#ide-vscode)
 * Arduino IDE - [download page here](https://www.arduino.cc/en/software)
 
-Why two IDEs? Well, Arduino IDE is so simple that it's a very nice place to start. Lots of pre-installed examples that you can simply run. All toolchains install automatically (AVR, ARM, etc.). It provides an easy to use terminal to see UART data (refer to [UART](chapters/3_uart.md)). However, anything bigger than one file tends to be more and more difficult to maintain. 
+Why two IDEs? Well, Arduino IDE is so simple that it's a very nice place to start. Lots of 
+pre-installed examples that you can simply run. All toolchains install automatically (AVR, ARM, etc.). 
+It provides an easy to use terminal to see UART data (refer to [UART](chapters/3_uart.md)). However, 
+anything bigger than one file tends to be more and more difficult to maintain. 
 
-VSCode is an advanced text editor that can work quite nicely as an IDE if you configure it properly. *PlatformIO* provides support for most of development boards available on the market. It also handles external dependencies quite well, so you don't need to download 3rd party libraries on your own. It all comes with a greater complexity and is slightly more difficult to use. Just slightly.
+VSCode is an advanced text editor that can work quite nicely as an IDE if you configure it properly. 
+*PlatformIO* provides support for most of development boards available on the market. It also handles 
+external dependencies quite well, so you don't need to download 3rd party libraries on your own. It 
+all comes with a greater complexity and is slightly more difficult to use. Just slightly.
 
-Now, sometimes it's easier to compile software in Arduino IDE than in VSCode. You download a lib, compile, and run. VSCode can sometimes be a pain in this aspect. So Arduino IDE is also a good tool for any quick debugging you may need.
+Now, sometimes it's easier to compile software in Arduino IDE than in VSCode. You download a lib, 
+compile, and run. VSCode can sometimes be a pain in this aspect. So Arduino IDE is also a good tool 
+for any quick debugging you may need.
 
 
 ## TL;DR; Skip tutorial, give me a robot
@@ -115,11 +131,12 @@ Now, sometimes it's easier to compile software in Arduino IDE than in VSCode. Yo
 If you are impatient and want the robot now without following the tutorial,
 here are all the steps you need to create your robot.
 
-* 3d-print all elements you find in [`3d_models`](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models) directory. Use \*.stl files
+* 3d-print all elements you find in [`3d_models`](https://github.com/krkruk/arduino-robot-tutorial/tree/master/3d_models) directory. Use \*.stl files. Then, follow the assemble instructions
+as provided in [Integrating knowledge - Building a robot!](chapters/6_robot_integration.md) chapter.
   in your favorite slicer software
 * Follow the pinout as shown in the table
 * Install the software on your Cytron board. Use README file distributed alongside
-  the source code
+  the source code. Final code can be found [here](https://github.com/krkruk/arduino-robot-tutorial/tree/master/mini-robot/final_source_code).
 
 **PINOUT**
 
